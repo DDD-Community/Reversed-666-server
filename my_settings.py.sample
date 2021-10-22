@@ -1,0 +1,11 @@
+DATABASES = { 
+    'default' : { 
+        'ENGINE': 'django.db.backends.mysql', 
+        'NAME': 'DBname',    # 본인이 사용할 데이터베이스이름
+        'USER': 'root',   # root
+        'PASSWORD': 'PASSWORD',     # 본인이 사용하는 mysql 패스워드
+        'HOST': 'localhost',   # localhost
+        'PORT': '3306',   # 3306
+    } 
+} 
+SECRET_KEY = { 'secret':'SECRET_KEY', } 

@@ -14,7 +14,7 @@ inflection==0.5.1
 itypes==1.2.0
 Jinja2==3.0.2
 MarkupSafe==2.0.1
-mysqlclient @ file:///C:/Users/dlgpd/Downloads/mysqlclient-1.4.6-cp39-cp39-win32.whl
+mysqlclient==2.0.3
 packaging==21.0
 pipenv==2021.5.29
 platformdirs==2.4.0
