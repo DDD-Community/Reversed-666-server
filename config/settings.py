@@ -40,6 +40,9 @@ INSTALLED_APPS = [
     'rest_framework',
     'drf_yasg',
     'product',
+    'brand',
+    'folder',
+    'user',
 ]
 
 MIDDLEWARE = [
