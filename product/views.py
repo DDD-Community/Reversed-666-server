@@ -5,6 +5,9 @@ from django.http import Http404
 
 from .models import Product
 from .serializers import ProductSerializer
+from drf_yasg.utils import swagger_auto_schema
+
+    
 
 # Create your views here. 
 
@@ -13,7 +16,7 @@ class ProductViewSet(viewsets.GenericViewSet,
                 View): 
 
     serializer_class = ProductSerializer   # 이 클래스형 view 에서 사용할 시리얼라이저를 선언
-
+    @swagger_auto_schema(tags=['상품 API'])
     def get_queryset(self):
         conditions = {
             'id': self.kwargs.get("product_num", None),
