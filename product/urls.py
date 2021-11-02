@@ -1,9 +1,8 @@
 from django.urls import path 
 from django.conf import settings 
-from .views import ProductViewSet
+from .views import ProductGetView, ProductPostView
 
 urlpatterns = [ 
-    #path("v1/product", ProductViewSet.as_view({"get": "list", "post": "add"}), name="musics"),
-    path("v1/product/", ProductViewSet.as_view({"get": "list"}), name="musics"),
-    path("v1/<int:product_num>", ProductViewSet.as_view({"get": "list"}), name="music"),
+    path("product/", ProductPostView.as_view(), name="postproducts"),
+    path("product/<int:folderId>", ProductGetView.as_view(), name="getproducts"),
 ]
