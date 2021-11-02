@@ -18,4 +18,4 @@ class MakeAnonymousUserView(APIView):
     def get(self, request):
         Uuid = uuid.uuid4()
         user = User.objects.create(anonymous_id = Uuid)
-        return Response("OK")
+        return Response(f"anonymousId : {user.anonymous_id}")
