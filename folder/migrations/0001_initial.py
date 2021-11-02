@@ -9,32 +9,25 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('brand', '0001_initial'),
-        ('folder', '0001_initial'),
         ('user', '0001_initial'),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Product',
+            name='Folder',
             fields=[
                 ('id', models.BigAutoField(primary_key=True, serialize=False, verbose_name='Product_id')),
-                ('name', models.CharField(max_length=255, null=True, verbose_name='상품 이름')),
-                ('price', models.CharField(max_length=255, null=True, verbose_name='상품 가격')),
-                ('image_url', models.CharField(max_length=255, null=True, verbose_name='상품 이미지 링크')),
-                ('site_url', models.CharField(max_length=255, null=True, verbose_name='상품 사이트 링크')),
+                ('name', models.CharField(max_length=255, verbose_name='폴더 이름')),
+                ('description', models.CharField(max_length=255, null=True, verbose_name='폴더 설명')),
                 ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='생성된 날짜')),
                 ('updated_at', models.DateTimeField(auto_now=True, null=True, verbose_name='수정된 날짜')),
                 ('deleted_at', models.DateTimeField(null=True, verbose_name='삭제된 날짜')),
                 ('Is_deleted', models.BooleanField(default=False, verbose_name='삭제된 브랜드인지 여부')),
-                ('added_brand_id', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='brand.addedbrand')),
-                ('brand_id', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='brand.brand')),
-                ('folder_id', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='folder.folder')),
                 ('user_id', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='user.user')),
             ],
             options={
-                'verbose_name_plural': '상품',
-                'db_table': 'products',
+                'verbose_name_plural': '폴더',
+                'db_table': 'folders',
                 'ordering': ['created_at'],
                 'managed': True,
             },
