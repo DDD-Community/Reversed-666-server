@@ -5,8 +5,9 @@ from django.shortcuts import render
 from rest_framework import status
 from drf_yasg.utils import swagger_auto_schema
 from .models import User
+from django.http import HttpResponse
+import json
 import uuid
-from common.renderers import CustomRenderer
 
 class AnonymousUserView(APIView):
     @swagger_auto_schema(tags=['유저 API'])
@@ -19,4 +20,7 @@ class MakeAnonymousUserView(APIView):
     def get(self, request):
         anonymousId = uuid.uuid4()
         user = User.objects.create(anonymous_id = anonymousId)
-        return Response(f"anonymousId : {user.anonymous_id}")
+        data = {
+            "anonymousId" : f"{user.anonymous_id}"
+        }
+        return HttpResponse(json.dumps(data), content_type = "application/json", status = 200)

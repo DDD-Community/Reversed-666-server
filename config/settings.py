@@ -57,12 +57,6 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-REST_FRAMEWORK = {
-    'DEFAULT_RENDERER_CLASSES': [
-        'common.renderers.CustomRenderer',
-    ],
-}
-
 ROOT_URLCONF = 'config.urls'
 
 TEMPLATES = [
