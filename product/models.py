@@ -1,13 +1,16 @@
 from django.db import models 
+from user.models import User
+from folder.models import Folder
+from brand.models import Brand, addedBrand, likedBrand
 
 # Create your models here. 
 
 class Product(models.Model):
     id = models.BigAutoField(primary_key=True, verbose_name='Product_id')
-    user_id = models.ForeignKey("users", null = False, related_name="users", on_delete=models.CASCADE, db_column="user_id")
-    folder_id = models.ForeignKey("folders", null = False, related_name="folders", on_delete=models.CASCADE, db_column="folder_id")
-    brand_id = models.ForeignKey("brands", null = True, related_name="brands", on_delete=models.CASCADE, db_column="brand_id")
-    added_brand_id = models.ForeignKey("added_brands", null = True, related_name="added_brands", on_delete=models.CASCADE, db_column="added_brand_id")
+    user_id = models.ForeignKey(User, null = True, blank = False, on_delete=models.CASCADE)
+    folder_id = models.ForeignKey(Folder, null = True, blank = False, on_delete=models.CASCADE)
+    brand_id = models.ForeignKey(Brand, null = True, blank = True, on_delete=models.CASCADE)
+    added_brand_id = models.ForeignKey(addedBrand, null = True, blank = True, on_delete=models.CASCADE)
 
     name = models.CharField(null=True, max_length=255, verbose_name='상품 이름')
     price = models.CharField(null=True, max_length=255, verbose_name='상품 가격')

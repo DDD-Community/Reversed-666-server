@@ -1,4 +1,5 @@
 from django.db import models
+from user.models import User
 
 # Create your models here. 
 
@@ -27,7 +28,7 @@ class Brand(models.Model):
 
 class addedBrand(models.Model):
     id = models.BigAutoField(primary_key=True, verbose_name='추가된 브랜드 id')
-    user_id = models.ForeignKey("users", null = False, related_name="users", on_delete=models.CASCADE, db_column="user_id")
+    user_id = models.ForeignKey(User, null = True, blank = False, on_delete=models.CASCADE)
     name = models.CharField(null=False, max_length=255, verbose_name='추가된 브랜드 이름')
     en_name = models.CharField(null=False, max_length=255, verbose_name='추가된 브랜드 영어 이름')
     site_url = models.CharField(null=True, max_length=255, verbose_name='추가된 브랜드 사이트 url')
@@ -48,10 +49,10 @@ class addedBrand(models.Model):
 
 class likedBrand(models.Model):
     id = models.BigAutoField(primary_key=True, verbose_name='브랜드 id')
-    user_id = models.ForeignKey("users", null = False, related_name="users", on_delete=models.CASCADE, db_column="user_id")
-    brand_id = models.ForeignKey("brands", null = True, related_name="brands", on_delete=models.CASCADE, db_column="brand_id")
-    added_brand_id = models.ForeignKey("added_brands", null = True, related_name="added_brands", on_delete=models.CASCADE, db_column="added_brand_id")
-    
+    user_id = models.ForeignKey(User, null = True, blank = False, on_delete=models.CASCADE)
+    brand_id = models.ForeignKey(Brand, null = True, blank = True,  on_delete=models.CASCADE)
+    added_brand_id = models.ForeignKey(addedBrand, null = True, blank = True, on_delete=models.CASCADE)
+
     created_at = models.DateTimeField(null = False, auto_now_add=True, verbose_name='생성된 날짜')
     updated_at = models.DateTimeField(null = True, auto_now=True, verbose_name='수정된 날짜')
     deleted_at = models.DateTimeField(null = True, verbose_name='삭제된 날짜')

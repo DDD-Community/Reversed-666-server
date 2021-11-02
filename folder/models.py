@@ -1,9 +1,10 @@
 from django.db import models
+from user.models import User
 
 # Create your models here.
 class Folder(models.Model):
     id = models.BigAutoField(primary_key=True, verbose_name='Product_id')
-    user_id = models.ForeignKey("users", null = False, related_name="users", on_delete=models.CASCADE, db_column="user_id")
+    user_id = models.ForeignKey(User, null = True, blank = False, on_delete=models.CASCADE)
     name = models.CharField(null=False, max_length=255, verbose_name='폴더 이름')
     description = models.CharField(null=True, max_length=255, verbose_name='폴더 설명')
 
