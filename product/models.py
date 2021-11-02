@@ -16,7 +16,7 @@ class Product(models.Model):
     class Meta:
         # abstract = True  # sqlite3 사용 시 어째선지 이게 있으면 마이그레이션이 안 됨.
         managed = True
-        db_table = 'Product'
+        db_table = 'products'
         app_label = 'product'
         ordering = ['created_at', ]
         verbose_name_plural = '상품'
