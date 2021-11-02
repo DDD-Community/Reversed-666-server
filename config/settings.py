@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
+
+import rest_framework
 import my_settings
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
