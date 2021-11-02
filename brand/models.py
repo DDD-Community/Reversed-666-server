@@ -18,7 +18,7 @@ class Brand(models.Model):
         # abstract = True  # sqlite3 사용 시 어째선지 이게 있으면 마이그레이션이 안 됨.
         managed = True
         db_table = 'brands'
-        app_label = 'api'
+        app_label = 'brand'
         ordering = ['created_at', ]
         verbose_name_plural = '브랜드'
 
@@ -30,6 +30,7 @@ class added_brand(models.Model):
     updated_at = models.DateTimeField(auto_now=True, verbose_name='수정된 날짜')
     deleted_at = models.DateTimeField(blank=True, null=True, verbose_name='삭제된 날짜')
     name = models.CharField(null=False, max_length=255, verbose_name='브랜드 이름')
+    en_name = models.CharField(null=False, max_length=255, verbose_name='브랜드 영어 이름')
     site_url = models.CharField(null=True, max_length=255, verbose_name='브랜드 url')
     logo_url = models.CharField(null=True, max_length=255, verbose_name='로고 url')
 
@@ -37,6 +38,6 @@ class added_brand(models.Model):
         # abstract = True  # sqlite3 사용 시 어째선지 이게 있으면 마이그레이션이 안 됨.
         managed = True
         db_table = 'added_brands'
-        app_label = 'api'
+        app_label = 'brand'
         ordering = ['created_at', ]
         verbose_name_plural = '유저가 추가한 브랜드'
