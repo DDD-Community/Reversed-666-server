@@ -6,7 +6,7 @@ from django.shortcuts import render
 from rest_framework import status
 from drf_yasg.utils import swagger_auto_schema
 from .models import User
-from .serializer import UserSerializer
+from .serializer import UserSerializer, UserCreateSerializer
 from django.http import HttpResponse
 import json
 import uuid
@@ -24,7 +24,5 @@ class MakeAnonymousUserView(APIView):
     def get(self, request):
         anonymousId = uuid.uuid4()
         user = User.objects.create(anonymous_id = anonymousId)
-        data = {
-            "anonymousId" : f"{user.anonymous_id}"
-        }
-        return HttpResponse(json.dumps(data), content_type = "application/json", status = 200)
+        serializer = UserCreateSerializer(user)
+        return JsonResponse(serializer.data, status = 200)
