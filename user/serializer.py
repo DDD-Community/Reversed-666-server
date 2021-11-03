@@ -6,8 +6,4 @@ from .models import User
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ("anonymous_id")
-    
-    def create(self, anonymous):
-        user = User.objects.create_user(anonymous)
-        return user
+        fields = "__all__"
