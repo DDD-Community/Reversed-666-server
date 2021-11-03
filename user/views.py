@@ -13,8 +13,8 @@ import uuid
 
 class AnonymousUserView(APIView):
     @swagger_auto_schema(tags=['유저 API'])
-    def get(self, request, anonymousId):
-        obj = User.objects.get(anonymous_id=anonymousId)
+    def get(self, request, id):
+        obj = User.objects.get(id=id)
         serializer = UserSerializer(obj)
         return JsonResponse(serializer.data, status = 200)
 
