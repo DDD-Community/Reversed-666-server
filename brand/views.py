@@ -1,9 +1,12 @@
+from django.http.response import JsonResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import authentication, permissions
 from django.shortcuts import render
 from rest_framework import status
 from drf_yasg.utils import swagger_auto_schema
+from .serializer import mainBrandSerializer
+from .models import mainBrand
 
 class brandView(APIView):
     @swagger_auto_schema(tags=['브랜드 API'])
@@ -23,7 +26,9 @@ class brandPopularView(APIView):
 class brandMainView(APIView):
     @swagger_auto_schema(tags=['브랜드 API'])
     def get(self, request):
-        return Response("메인화면에 보여줄 브랜드를 가져옵니다.", status = 200)
+        obj = mainBrand.objects.all()
+        serializer = mainBrandSerializer(obj, many = True)
+        return JsonResponse(serializer.data, status = 200, safe = False)
 
 class brandSearchView(APIView):
     @swagger_auto_schema(tags=['브랜드 API'])
