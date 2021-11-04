@@ -12,3 +12,5 @@ class UserCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'anonymous_id'] 
+
+        
