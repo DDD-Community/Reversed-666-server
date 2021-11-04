@@ -5,8 +5,8 @@ from rest_framework import authentication, permissions
 from django.shortcuts import render
 from rest_framework import status
 from drf_yasg.utils import swagger_auto_schema
-from .serializer import mainBrandSerializer
-from .models import mainBrand
+from .serializer import BrandSerializer, mainBrandsSerializer
+from .models import mainBrand, Brand
 
 class brandView(APIView):
     @swagger_auto_schema(tags=['브랜드 API'])
@@ -26,8 +26,9 @@ class brandPopularView(APIView):
 class brandMainView(APIView):
     @swagger_auto_schema(tags=['브랜드 API'])
     def get(self, request):
-        obj = mainBrand.objects.all()
-        serializer = mainBrandSerializer(obj, many = True)
+        queryset = mainBrand.objects.all()
+        queryset = mainBrandsSerializer.setup_preloading(queryset)
+        serializer = mainBrandsSerializer(queryset, many = True)
         return JsonResponse(serializer.data, status = 200, safe = False)
 
 class brandSearchView(APIView):
