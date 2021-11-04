@@ -27,7 +27,7 @@ class brandPopularView(APIView):
 class brandMainView(APIView):
     @swagger_auto_schema(tags=['브랜드 API'])
     def get(self, request):
-        queryset = mainBrand.objects.all()
+        queryset = mainBrand.objects.filter(Is_deleted = False)
         queryset = mainBrandsSerializer.setup_preloading(queryset)
         serializer = mainBrandsSerializer(queryset, many = True)
         data = {'main_brands': []}
