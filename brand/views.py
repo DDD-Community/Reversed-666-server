@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework import authentication, permissions
 from django.shortcuts import render
 from rest_framework import status
+from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from .serializer import BrandSerializer, mainBrandsSerializer
 from .models import mainBrand, Brand
@@ -25,6 +26,9 @@ class brandPopularView(APIView):
         return Response("브랜드를 인기있는 순으로 받아와 출력합니다.", status = 200)
         
 class brandMainView(APIView):
+    '''
+    메인화면에 띄울 브랜드 리스트를 가져온다.
+    '''
     @swagger_auto_schema(tags=['브랜드 API'])
     def get(self, request):
         queryset = mainBrand.objects.filter(Is_deleted = False)
