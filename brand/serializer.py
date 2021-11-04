@@ -10,6 +10,7 @@ class BrandSerializer(serializers.ModelSerializer):
 
 class mainBrandsSerializer(serializers.ModelSerializer):
     brand_id = BrandSerializer(read_only = True)
+    
     class Meta:
         model = mainBrand
         fields = ["brand_id"]
@@ -17,6 +18,7 @@ class mainBrandsSerializer(serializers.ModelSerializer):
     @classmethod
     def setup_preloading(cls, queryset):
         return queryset.select_related("brand_id")
+
 
 
 

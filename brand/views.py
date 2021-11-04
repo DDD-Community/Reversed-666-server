@@ -7,6 +7,7 @@ from rest_framework import status
 from drf_yasg.utils import swagger_auto_schema
 from .serializer import BrandSerializer, mainBrandsSerializer
 from .models import mainBrand, Brand
+import json
 
 class brandView(APIView):
     @swagger_auto_schema(tags=['브랜드 API'])
@@ -29,7 +30,10 @@ class brandMainView(APIView):
         queryset = mainBrand.objects.all()
         queryset = mainBrandsSerializer.setup_preloading(queryset)
         serializer = mainBrandsSerializer(queryset, many = True)
-        return JsonResponse(serializer.data, status = 200, safe = False)
+        data = {'main_brands': []}
+        list(map(lambda x: data['main_brands'].append(x['brand_id']), serializer.data))
+        
+        return JsonResponse(data, status = 200, safe = False)
 
 class brandSearchView(APIView):
     @swagger_auto_schema(tags=['브랜드 API'])
