@@ -6,7 +6,7 @@ from django.shortcuts import render
 from rest_framework import status
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
-from .serializer import BrandSerializer, mainBrandsSerializer
+from .serializer import BrandSerializer, mainBrandsSerializer, clickCountSerializer
 from .models import mainBrand, Brand
 import json
 
@@ -63,4 +63,12 @@ class markedBrandCountView(APIView):
 class BrandCountView(APIView):
     @swagger_auto_schema(tags=['브랜드 API'])
     def post(self, request, brandId):
-        return Response("브랜드를 클릭한 횟수를 카운팅합니다.", status = 200)
+        try:
+            queryset = Brand.objects.get(id = brandId)
+        except Exception as ex:
+            return JsonResponse({"status": 404, "message" : str(ex)}, status = 404, safe = False)
+        else:
+            queryset.click_count += 1
+            queryset.save()
+            serializer = clickCountSerializer(queryset)
+            return JsonResponse(serializer.data, status = 200, safe = False)

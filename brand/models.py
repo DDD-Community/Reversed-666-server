@@ -9,7 +9,7 @@ class Brand(models.Model):
     en_name = models.CharField(null=False, max_length=255, verbose_name='브랜드 영어 이름')
     site_url = models.CharField(null=True, max_length=255, verbose_name='브랜드 url')
     logo_url = models.CharField(null=True, max_length=255, verbose_name='로고 url')
-    total_click_count = models.BigIntegerField(default= 0, verbose_name='브랜드를 클릭한 횟수')
+    click_count = models.BigIntegerField(default= 0, verbose_name='브랜드를 클릭한 횟수')
     like_count = models.BigIntegerField(default= 0, verbose_name='브랜드를 좋아요한 횟수')
     created_at = models.DateTimeField(null = False, auto_now_add=True, verbose_name='생성된 날짜')
     updated_at = models.DateTimeField(null = True, auto_now=True, verbose_name='수정된 날짜')
