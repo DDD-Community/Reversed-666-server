@@ -10,6 +10,6 @@ urlpatterns = [
     path("brands/search", brandSearchView.as_view(), name = "GetmainBrands"),
     path("brands/marked", markedBrandView.as_view(), name = "GetmainBrands"),
     path("brands/marked/<search>", markedBrandSearchView.as_view(), name = "GetmainBrands"),
-    path("brand/marked/count", markedBrandCountView.as_view(), name = "GetmainBrands"),
-    path("brand/count", BrandCountView.as_view(), name = "GetmainBrands"),
+    path("brand/marked/count/<int:likeBrandId>", markedBrandCountView.as_view(), name = "GetmainBrands"),
+    path("brand/count/<int:brandId>", BrandCountView.as_view(), name = "GetmainBrands"),
 ]

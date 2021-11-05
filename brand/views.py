@@ -29,7 +29,7 @@ class brandMainView(APIView):
     '''
     메인화면에 띄울 브랜드 리스트를 가져온다.
     '''
-    @swagger_auto_schema(tags=['브랜드 API'])
+    @swagger_auto_schema(tags=['브랜드 API'], responses = {200:BrandSerializer(many = True)})
     def get(self, request):
         queryset = mainBrand.objects.filter(Is_deleted = False)
         queryset = mainBrandsSerializer.setup_preloading(queryset)
@@ -62,5 +62,5 @@ class markedBrandCountView(APIView):
 
 class BrandCountView(APIView):
     @swagger_auto_schema(tags=['브랜드 API'])
-    def post(self, request):
+    def post(self, request, brandId):
         return Response("브랜드를 클릭한 횟수를 카운팅합니다.", status = 200)

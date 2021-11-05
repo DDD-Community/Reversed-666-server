@@ -9,6 +9,7 @@ class BrandSerializer(serializers.ModelSerializer):
         model = Brand
         fields = ['id', 'name', 'en_name', 'site_url', 'logo_url']
 
+
 # main_brands 테이블과 brands 테이블을 join하고, 배열 형태로 내보낸다.
 class mainBrandsSerializer(serializers.ModelSerializer):
     brand_id = BrandSerializer(read_only = True)
@@ -21,3 +22,6 @@ class mainBrandsSerializer(serializers.ModelSerializer):
     def setup_preloading(cls, queryset):
         return queryset.select_related("brand_id")
 
+
+
+    
