@@ -6,7 +6,7 @@ from django.shortcuts import render
 from rest_framework import status
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
-from .serializer import BrandSerializer, mainBrandsSerializer, clickCountSerializer
+from .serializer import BrandSerializer, brandJoinSerializer, clickCountSerializer, mainBrandSerializer, popularBrandSerializer, popularBrandType, mainBrandType, swaggermainBrand
 from .models import mainBrand, Brand
 import json
 
@@ -21,23 +21,33 @@ class brandAddView(APIView):
         return Response("브랜드의 정보를 받아와 추가합니다", status = 200)
 
 class brandPopularView(APIView):
-    @swagger_auto_schema(tags=['브랜드 API'])
+    '''
+    브랜드를 인기순으로 받아온다.
+    '''
+    @swagger_auto_schema(tags=['브랜드 API'], 
+    manual_parameters=[openapi.Parameter('size', openapi.IN_QUERY, description="받아오고자 하는 브랜드의 개수", type = openapi.TYPE_STRING)],
+    responses = {200: popularBrandSerializer})
     def get(self, request):
-        return Response("브랜드를 인기있는 순으로 받아와 출력합니다.", status = 200)
+        size = int(request.GET.get('size'))
+        query = Brand.objects.all().order_by('-click_count')[:size]
+        serializer = BrandSerializer(query, many = True)
+        brandsInfo = popularBrandType(size, serializer.data)
+        serializer = popularBrandSerializer(brandsInfo)
+        
+        return JsonResponse(serializer.data, status = 200, safe = False)
         
 class brandMainView(APIView):
     '''
     메인화면에 띄울 브랜드 리스트를 가져온다.
     '''
-    @swagger_auto_schema(tags=['브랜드 API'], responses = {200:BrandSerializer(many = True)})
+    @swagger_auto_schema(tags=['브랜드 API'], responses = {200:swaggermainBrand})
     def get(self, request):
-        queryset = mainBrand.objects.filter(Is_deleted = False)
-        queryset = mainBrandsSerializer.setup_preloading(queryset)
-        serializer = mainBrandsSerializer(queryset, many = True)
-        data = {'main_brands': []}
-        list(map(lambda x: data['main_brands'].append(x['brand_id']), serializer.data))
-        
-        return JsonResponse(data, status = 200, safe = False)
+        query = mainBrand.objects.filter(Is_deleted = False)
+        query = query.select_related("brand_id")
+        serializer = brandJoinSerializer(query, many = True)
+        mainBrandInfo = mainBrandType(serializer.data)
+        serializer = mainBrandSerializer(mainBrandInfo)
+        return JsonResponse(serializer.data, status = 200, safe = False)
 
 class brandSearchView(APIView):
     @swagger_auto_schema(tags=['브랜드 API'])
@@ -64,6 +74,9 @@ class BrandCountView(APIView):
     @swagger_auto_schema(tags=['브랜드 API'], responses = {200: clickCountSerializer})
 
     def post(self, request, brandId):
+        '''
+        브랜드 클릭횟수를 증가시킨다.
+        '''
         try:
             queryset = Brand.objects.get(id = brandId)
         except Exception as ex:
