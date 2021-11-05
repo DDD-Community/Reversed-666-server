@@ -6,7 +6,7 @@ from django.shortcuts import render
 from rest_framework import status
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
-from .serializer import BrandSerializer, brandJoinSerializer, clickCountSerializer, mainBrandSerializer, popularBrandSerializer, popularBrandType, mainBrandType
+from .serializer import BrandSerializer, brandJoinSerializer, clickCountSerializer, mainBrandSerializer, popularBrandSerializer, popularBrandType, mainBrandType, swaggermainBrand
 from .models import mainBrand, Brand
 import json
 
@@ -40,7 +40,7 @@ class brandMainView(APIView):
     '''
     메인화면에 띄울 브랜드 리스트를 가져온다.
     '''
-    @swagger_auto_schema(tags=['브랜드 API'], responses = {200:mainBrandSerializer})
+    @swagger_auto_schema(tags=['브랜드 API'], responses = {200:swaggermainBrand})
     def get(self, request):
         query = mainBrand.objects.filter(Is_deleted = False)
         query = query.select_related("brand_id")
@@ -74,6 +74,9 @@ class BrandCountView(APIView):
     @swagger_auto_schema(tags=['브랜드 API'], responses = {200: clickCountSerializer})
 
     def post(self, request, brandId):
+        '''
+        브랜드 클릭횟수를 증가시킨다.
+        '''
         try:
             queryset = Brand.objects.get(id = brandId)
         except Exception as ex:
