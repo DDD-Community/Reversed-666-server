@@ -38,3 +38,4 @@ class popularBrandSerializer(serializers.Serializer):
     size = serializers.IntegerField()
     sort_by = serializers.CharField()
     brand_list = BrandSerializer(many = True)
+

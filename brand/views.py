@@ -21,7 +21,12 @@ class brandAddView(APIView):
         return Response("브랜드의 정보를 받아와 추가합니다", status = 200)
 
 class brandPopularView(APIView):
-    @swagger_auto_schema(tags=['브랜드 API'], responses = {200: popularBrandSerializer})
+    '''
+    브랜드를 인기순으로 받아온다.
+    '''
+    @swagger_auto_schema(tags=['브랜드 API'], 
+    manual_parameters=[openapi.Parameter('size', openapi.IN_QUERY, description="받아오고자 하는 브랜드의 개수", type = openapi.TYPE_STRING)],
+    responses = {200: popularBrandSerializer})
     def get(self, request):
         size = int(request.GET.get('size'))
         query = Brand.objects.all().order_by('-click_count')[:size]
