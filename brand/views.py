@@ -61,7 +61,8 @@ class markedBrandCountView(APIView):
         return Response("브랜드를 북마크한 횟수를 카운팅합니다.", status = 200)
 
 class BrandCountView(APIView):
-    @swagger_auto_schema(tags=['브랜드 API'])
+    @swagger_auto_schema(tags=['브랜드 API'], responses = {200: clickCountSerializer})
+
     def post(self, request, brandId):
         try:
             queryset = Brand.objects.get(id = brandId)
