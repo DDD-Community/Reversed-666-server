@@ -23,7 +23,9 @@ class brandAddView(APIView):
 class brandPopularView(APIView):
     @swagger_auto_schema(tags=['브랜드 API'])
     def get(self, request):
-        return Response("브랜드를 인기있는 순으로 받아와 출력합니다.", status = 200)
+        query = Brand.objects.all().order_by('click_count')
+        serializer = BrandSerializer(many = True)
+        return JsonResponse(serializer.data, status)
         
 class brandMainView(APIView):
     '''
