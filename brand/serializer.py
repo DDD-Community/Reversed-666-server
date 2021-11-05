@@ -27,3 +27,15 @@ class clickCountSerializer(serializers.ModelSerializer):
     class Meta:
         model = Brand
         fields = ["id", "name", "click_count"]
+
+class popularBrand(object):
+    def __init__(self, size, list):
+        self.size = size
+        self.sort_by = 'popular'
+        self.list = list
+
+class popularBrandSerializer(serializers.Serializer):
+    size = serializers.IntegerField()
+    sort_by = serializers.CharField()
+    list = serializers.ListField()
+

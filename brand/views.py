@@ -6,7 +6,7 @@ from django.shortcuts import render
 from rest_framework import status
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
-from .serializer import BrandSerializer, mainBrandsSerializer, clickCountSerializer
+from .serializer import BrandSerializer, mainBrandsSerializer, clickCountSerializer, popularBrandSerializer, popularBrand
 from .models import mainBrand, Brand
 import json
 
@@ -23,11 +23,15 @@ class brandAddView(APIView):
 class brandPopularView(APIView):
     @swagger_auto_schema(tags=['브랜드 API'])
     def get(self, request):
-        size = request.GET.get('size')
-        print(size)
-        query = Brand.objects.all().order_by('-click_count')
+        size = int(request.GET.get('size'))
+        query = Brand.objects.all().order_by('-click_count')[:size]
         serializer = BrandSerializer(query, many = True)
-        return JsonResponse(serializer.data, status = 200, safe = False)
+        #data = json.dumps(serializer.data,  ensure_ascii=False)
+        brandsInfo = popularBrand(size, serializer.data)
+        #print(type(brandsInfo.list))
+        bserializer = popularBrandSerializer(brandsInfo)
+        
+        return JsonResponse(bserializer.data, status = 200, safe = False)
         
 class brandMainView(APIView):
     '''
