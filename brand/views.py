@@ -4,9 +4,9 @@ from rest_framework.response import Response
 from rest_framework import authentication, permissions
 from django.shortcuts import render
 from rest_framework import filters, viewsets
-from rest_framework.decorators import api_view
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
+from django.utils.decorators import method_decorator
 from .serializer import BrandSerializer, brandJoinSerializer, clickCountSerializer, mainBrandSerializer, popularBrandSerializer, popularBrandType, mainBrandType, swaggermainBrand
 from .models import mainBrand, Brand
 
@@ -49,9 +49,11 @@ class brandMainView(APIView):
         serializer = mainBrandSerializer(mainBrandInfo)
         return JsonResponse(serializer.data, status = 200, safe = False)
 
-@swagger_auto_schema(methods = ['get'])
+@method_decorator(name="list", decorator=swagger_auto_schema(tags=["브랜드 API"]))
 class brandSearchView(viewsets.ModelViewSet):
-    schema_tags = ['브랜드 API']
+    '''
+    검색 키워드를 받아 해당하는 브랜드 리스트를 돌려준다.
+    '''
     queryset = Brand.objects.all()
     serializer_class = BrandSerializer
     filter_backends = [filters.SearchFilter]
