@@ -23,5 +23,7 @@ class mainBrandsSerializer(serializers.ModelSerializer):
         return queryset.select_related("brand_id")
 
 
-
-    
+class clickCountSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Brand
+        fields = ["id", "name", "click_count"]
