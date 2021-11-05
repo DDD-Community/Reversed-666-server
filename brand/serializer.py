@@ -60,3 +60,4 @@ class clickCountSerializer(serializers.ModelSerializer):
     class Meta:
         model = Brand
         fields = ["id", "name", "click_count"]
+
