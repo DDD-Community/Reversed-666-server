@@ -32,10 +32,9 @@ class popularBrand(object):
     def __init__(self, size, list):
         self.size = size
         self.sort_by = 'popular'
-        self.list = list
+        self.brand_list = list
 
 class popularBrandSerializer(serializers.Serializer):
     size = serializers.IntegerField()
     sort_by = serializers.CharField()
-    list = serializers.ListField()
-
+    brand_list = BrandSerializer(many = True)

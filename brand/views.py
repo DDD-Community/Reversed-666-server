@@ -21,17 +21,15 @@ class brandAddView(APIView):
         return Response("브랜드의 정보를 받아와 추가합니다", status = 200)
 
 class brandPopularView(APIView):
-    @swagger_auto_schema(tags=['브랜드 API'])
+    @swagger_auto_schema(tags=['브랜드 API'], responses = {200: popularBrandSerializer})
     def get(self, request):
         size = int(request.GET.get('size'))
         query = Brand.objects.all().order_by('-click_count')[:size]
         serializer = BrandSerializer(query, many = True)
-        #data = json.dumps(serializer.data,  ensure_ascii=False)
         brandsInfo = popularBrand(size, serializer.data)
-        #print(type(brandsInfo.list))
-        bserializer = popularBrandSerializer(brandsInfo)
+        serializer = popularBrandSerializer(brandsInfo)
         
-        return JsonResponse(bserializer.data, status = 200, safe = False)
+        return JsonResponse(serializer.data, status = 200, safe = False)
         
 class brandMainView(APIView):
     '''
