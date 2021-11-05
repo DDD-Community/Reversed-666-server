@@ -11,9 +11,14 @@ from .serializer import BrandSerializer, brandJoinSerializer, clickCountSerializ
 from .models import mainBrand, Brand
 
 class brandView(APIView):
-    @swagger_auto_schema(tags=['브랜드 API'])
+    '''
+    brandId에 해당하는 브랜드 정보를 불러온다.
+    '''
+    @swagger_auto_schema(tags=['브랜드 API'], responses = {200:BrandSerializer})
     def get(self, request, brandId):
-        return Response(f"id가 {brandId}인 브랜드를 return합니다.", status = 200)
+        query = Brand.objects.get(id = brandId)
+        serializer = BrandSerializer(query)
+        return JsonResponse(serializer.data, status = 200, safe = False)
 
 class brandAddView(APIView):
     @swagger_auto_schema(tags=['브랜드 API'])
