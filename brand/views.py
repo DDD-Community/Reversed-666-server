@@ -8,7 +8,8 @@ from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from django.utils.decorators import method_decorator
 from .serializer import BrandSerializer, brandJoinSerializer, clickCountSerializer, mainBrandSerializer, popularBrandSerializer, popularBrandType, mainBrandType, swaggermainBrand
-from .models import mainBrand, Brand
+from .models import likedBrand, mainBrand, Brand
+from user.models import User
 
 class brandView(APIView):
     '''
@@ -78,7 +79,11 @@ class markedBrandSearchView(APIView):
 class markedBrandCountView(APIView):
     @swagger_auto_schema(tags=['담은 브랜드 API'])
     def post(self, request):
-        return Response("브랜드를 북마크한 횟수를 카운팅합니다.", status = 200)
+        user = User.objects.get(id = 1)
+        brand = Brand.objects.get(id = 1)
+        query = likedBrand.objects.create(brand_id = brand, user_id = user)
+        serializer = BrandSerializer(query)
+        return JsonResponse(serializer.data, status = 200)
 
 class BrandCountView(APIView):
     @swagger_auto_schema(tags=['브랜드 API'], responses = {200: clickCountSerializer})
