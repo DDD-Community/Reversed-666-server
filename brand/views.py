@@ -77,7 +77,13 @@ class markedBrandSearchView(APIView):
 
 
 class markedBrandCountView(APIView):
-    @swagger_auto_schema(tags=['담은 브랜드 API'])
+    @swagger_auto_schema(tags=['담은 브랜드 API'], 
+    request_body = openapi.Schema(type = openapi.TYPE_OBJECT,
+    properties = {
+        'user': openapi.Schema(type = openapi.TYPE_INTEGER, description = 'userId'),
+        'brand': openapi.Schema(type = openapi.TYPE_INTEGER, description = 'brandId')    
+    }),
+    responses = {200:likeBrandSerializer})
     def post(self, request):
         serializer = likeBrandSerializer(data = request.data)
         queryset = Brand.objects.get(id = request.data['brand'])

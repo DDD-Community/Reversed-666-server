@@ -70,7 +70,7 @@ class clickCountSerializer(serializers.ModelSerializer):
 class likeBrandSerializer(serializers.ModelSerializer):
     class Meta:
         model = likedBrand
-        fields = ['user', 'brand', 'created_at']
+        fields = ['user', 'brand']
         
     def to_representation(self, instance):
         self.fields['user'] = UserIdNameSerializer(read_only = True)
