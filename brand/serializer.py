@@ -2,7 +2,7 @@ from django.core import serializers
 from django.db.models import fields
 from rest_framework import serializers
 
-from user.serializer import UserSerializer
+from user.serializer import UserIdNameSerializer, UserSerializer
 from .models import mainBrand, Brand, likedBrand
 
 # Brand 객체에서 필요한 부분만 선택해 직렬화한다.
@@ -11,6 +11,10 @@ class BrandSerializer(serializers.ModelSerializer):
         model = Brand
         fields = ['id', 'name', 'en_name', 'site_url', 'logo_url']
 
+class BrandIdNameSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Brand
+        fields = ['id', 'name']
 
 #### main브랜드 관련 serializers ####
 
@@ -69,6 +73,6 @@ class likeBrandSerializer(serializers.ModelSerializer):
         fields = ['user_id', 'brand_id', 'created_at']
         
     def to_representation(self, instance):
-        self.fields['user_id'] = UserSerializer(read_only = True)
-        self.fields['brand_id'] = BrandSerializer(read_only = True)
+        self.fields['user_id'] = UserIdNameSerializer(read_only = True)
+        self.fields['brand_id'] = BrandIdNameSerializer(read_only = True)
         return super().to_representation(instance)

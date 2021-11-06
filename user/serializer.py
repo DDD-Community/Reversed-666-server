@@ -13,3 +13,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id', 'anonymous_id'] 
 
+class UserIdNameSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'nickname']
