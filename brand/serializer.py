@@ -1,6 +1,8 @@
 from django.core import serializers
 from django.db.models import fields
 from rest_framework import serializers
+
+from user.serializer import UserSerializer
 from .models import mainBrand, Brand, likedBrand
 
 # Brand 객체에서 필요한 부분만 선택해 직렬화한다.
@@ -61,3 +63,12 @@ class clickCountSerializer(serializers.ModelSerializer):
         model = Brand
         fields = ["id", "name", "click_count"]
 
+class likeBrandSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = likedBrand
+        fields = ['user_id', 'brand_id', 'created_at']
+        
+    def to_representation(self, instance):
+        self.fields['user_id'] = UserSerializer(read_only = True)
+        self.fields['brand_id'] = BrandSerializer(read_only = True)
+        return super().to_representation(instance)

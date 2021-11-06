@@ -7,7 +7,7 @@ from rest_framework import filters, viewsets
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from django.utils.decorators import method_decorator
-from .serializer import BrandSerializer, brandJoinSerializer, clickCountSerializer, mainBrandSerializer, popularBrandSerializer, popularBrandType, mainBrandType, swaggermainBrand
+from .serializer import BrandSerializer, brandJoinSerializer, clickCountSerializer, mainBrandSerializer, popularBrandSerializer, popularBrandType, mainBrandType, swaggermainBrand, likeBrandSerializer
 from .models import likedBrand, mainBrand, Brand
 from user.models import User
 
@@ -79,11 +79,11 @@ class markedBrandSearchView(APIView):
 class markedBrandCountView(APIView):
     @swagger_auto_schema(tags=['담은 브랜드 API'])
     def post(self, request):
-        user = User.objects.get(id = 1)
-        brand = Brand.objects.get(id = 1)
-        query = likedBrand.objects.create(brand_id = brand, user_id = user)
-        serializer = BrandSerializer(query)
-        return JsonResponse(serializer.data, status = 200)
+        serializer = likeBrandSerializer(data = request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status = 200)
+        return JsonResponse(serializer.data, status = 404)
 
 class BrandCountView(APIView):
     @swagger_auto_schema(tags=['브랜드 API'], responses = {200: clickCountSerializer})
