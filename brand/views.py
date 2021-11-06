@@ -85,6 +85,9 @@ class markedBrandCountView(APIView):
     }),
     responses = {200:likeBrandSerializer})
     def post(self, request):
+        '''
+        브랜드 Id와 유저 Id를 받아와 좋아요 목록에 추가합니다.
+        '''
         serializer = likeBrandSerializer(data = request.data)
         queryset = Brand.objects.get(id = request.data['brand'])
         queryset.like_count +=1
