@@ -3,17 +3,22 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import authentication, permissions
 from django.shortcuts import render
-from rest_framework import status
+from rest_framework import filters, viewsets
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
+from django.utils.decorators import method_decorator
 from .serializer import BrandSerializer, brandJoinSerializer, clickCountSerializer, mainBrandSerializer, popularBrandSerializer, popularBrandType, mainBrandType, swaggermainBrand
 from .models import mainBrand, Brand
-import json
 
 class brandView(APIView):
-    @swagger_auto_schema(tags=['브랜드 API'])
+    '''
+    brandId에 해당하는 브랜드 정보를 불러온다.
+    '''
+    @swagger_auto_schema(tags=['브랜드 API'], responses = {200:BrandSerializer})
     def get(self, request, brandId):
-        return Response(f"id가 {brandId}인 브랜드를 return합니다.", status = 200)
+        query = Brand.objects.get(id = brandId)
+        serializer = BrandSerializer(query)
+        return JsonResponse(serializer.data, status = 200, safe = False)
 
 class brandAddView(APIView):
     @swagger_auto_schema(tags=['브랜드 API'])
@@ -49,10 +54,15 @@ class brandMainView(APIView):
         serializer = mainBrandSerializer(mainBrandInfo)
         return JsonResponse(serializer.data, status = 200, safe = False)
 
-class brandSearchView(APIView):
-    @swagger_auto_schema(tags=['브랜드 API'])
-    def get(self, request):
-        return Response("브랜드 검색 결과를 보여줍니다.", status = 200)
+@method_decorator(name="list", decorator=swagger_auto_schema(tags=["브랜드 API"]))
+class brandSearchView(viewsets.ModelViewSet):
+    '''
+    검색 키워드를 받아 해당하는 브랜드 리스트를 돌려준다.
+    '''
+    queryset = Brand.objects.all()
+    serializer_class = BrandSerializer
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['^name', '^en_name']
 
 class markedBrandView(APIView):
     @swagger_auto_schema(tags=['담은 브랜드 API'])
