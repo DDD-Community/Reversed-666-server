@@ -25,7 +25,7 @@ class mainBrandType(object):
 
 # brands 테이블과 leftjoin된 brand_id 필드의 정보만 불러온다.
 class brandJoinSerializer(serializers.ModelSerializer):
-    brand_id = BrandSerializer(read_only = True)
+    brand = BrandSerializer(read_only = True)
 
     class Meta:
         model = mainBrand
