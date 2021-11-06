@@ -49,7 +49,7 @@ class brandMainView(APIView):
     @swagger_auto_schema(tags=['브랜드 API'], responses = {200:swaggermainBrand})
     def get(self, request):
         query = mainBrand.objects.filter(Is_deleted = False)
-        query = query.select_related("brand_id")
+        query = query.select_related("brand")
         serializer = brandJoinSerializer(query, many = True)
         mainBrandInfo = mainBrandType(serializer.data)
         serializer = mainBrandSerializer(mainBrandInfo)

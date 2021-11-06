@@ -27,7 +27,7 @@ class Brand(models.Model):
 
 class addedBrand(models.Model):
     id = models.BigAutoField(primary_key=True, verbose_name='추가된 브랜드 id')
-    user_id = models.ForeignKey(User, null = True, blank = False, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, null = True, blank = False, on_delete=models.CASCADE)
     name = models.CharField(null=False, max_length=255, verbose_name='추가된 브랜드 이름')
     en_name = models.CharField(null=False, max_length=255, verbose_name='추가된 브랜드 영어 이름')
     site_url = models.CharField(null=True, max_length=255, verbose_name='추가된 브랜드 사이트 url')
@@ -48,9 +48,9 @@ class addedBrand(models.Model):
 
 class likedBrand(models.Model):
     id = models.BigAutoField(primary_key=True, verbose_name='브랜드 id')
-    user_id = models.ForeignKey(User, null = True, blank = False, on_delete=models.CASCADE)
-    brand_id = models.ForeignKey(Brand, null = True, blank = True,  on_delete=models.CASCADE)
-    added_brand_id = models.ForeignKey(addedBrand, null = True, blank = True, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, null = True, blank = False, on_delete=models.CASCADE)
+    brand = models.ForeignKey(Brand, null = True, blank = True,  on_delete=models.CASCADE)
+    added_brand = models.ForeignKey(addedBrand, null = True, blank = True, on_delete=models.CASCADE)
 
     created_at = models.DateTimeField(null = False, auto_now_add=True, verbose_name='생성된 날짜')
     updated_at = models.DateTimeField(null = True, auto_now=True, verbose_name='수정된 날짜')
@@ -68,7 +68,7 @@ class likedBrand(models.Model):
 
 class mainBrand(models.Model):
     id = models.BigAutoField(primary_key=True, verbose_name='브랜드 id')
-    brand_id = models.ForeignKey(Brand, null = True, blank = True,  on_delete=models.CASCADE)
+    brand = models.ForeignKey(Brand, null = True, blank = True,  on_delete=models.CASCADE)
 
     created_at = models.DateTimeField(null = False, auto_now_add=True, verbose_name='생성된 날짜')
     deleted_at = models.DateTimeField(null = True, verbose_name='삭제된 날짜')

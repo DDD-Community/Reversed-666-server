@@ -29,14 +29,14 @@ class brandJoinSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = mainBrand
-        fields = ["brand_id"]
+        fields = ["brand"]
 
 # join된 정보에는 모두 brand_id column이 맨 앞에 붙어 있기에 제거해준다.
 class mainBrandSerializer(serializers.Serializer):
     brandList = serializers.SerializerMethodField()
 
     def get_brandList(self, obj):
-        data = list(map(lambda x : x['brand_id'], obj.list))
+        data = list(map(lambda x : x['brand'], obj.list))
         return data
 
 class swaggermainBrand(serializers.Serializer):
@@ -70,9 +70,9 @@ class clickCountSerializer(serializers.ModelSerializer):
 class likeBrandSerializer(serializers.ModelSerializer):
     class Meta:
         model = likedBrand
-        fields = ['user_id', 'brand_id', 'created_at']
+        fields = ['user', 'brand', 'created_at']
         
     def to_representation(self, instance):
-        self.fields['user_id'] = UserIdNameSerializer(read_only = True)
-        self.fields['brand_id'] = BrandIdNameSerializer(read_only = True)
+        self.fields['user'] = UserIdNameSerializer(read_only = True)
+        self.fields['brand'] = BrandIdNameSerializer(read_only = True)
         return super().to_representation(instance)
