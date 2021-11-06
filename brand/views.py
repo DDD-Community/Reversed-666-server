@@ -81,8 +81,12 @@ class markedBrandCountView(APIView):
     def post(self, request):
         serializer = likeBrandSerializer(data = request.data)
         if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data, status = 200)
+            try:
+                serializer.save()
+            except Exception as ex:
+                return JsonResponse({"status": 404, "message" : str(ex)}, status = 404, safe = False)
+            else:
+                return JsonResponse(serializer.data, status = 200)
         return JsonResponse(serializer.data, status = 404)
 
 class BrandCountView(APIView):

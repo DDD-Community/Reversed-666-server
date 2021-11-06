@@ -57,7 +57,6 @@ class likedBrand(models.Model):
     deleted_at = models.DateTimeField(null = True, verbose_name='삭제된 날짜')
     Is_deleted = models.BooleanField( null = False, default= False, verbose_name='좋아요 취소된 브랜드인지 여부')
 
-
     class Meta:
         # abstract = True  # sqlite3 사용 시 어째선지 이게 있으면 마이그레이션이 안 됨.
         managed = True
@@ -65,6 +64,9 @@ class likedBrand(models.Model):
         app_label = 'brand'
         ordering = ['created_at', ]
         verbose_name_plural = '유저가 담은 브랜드'
+        constraints = [
+            models.UniqueConstraint(fields = ['user', 'brand'], name = 'unique user brand')
+        ]
 
 class mainBrand(models.Model):
     id = models.BigAutoField(primary_key=True, verbose_name='브랜드 id')
