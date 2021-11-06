@@ -14,7 +14,7 @@ class BrandSerializer(serializers.ModelSerializer):
 class BrandIdNameSerializer(serializers.ModelSerializer):
     class Meta:
         model = Brand
-        fields = ['id', 'name']
+        fields = ['id', 'name', 'like_count']
 
 #### main브랜드 관련 serializers ####
 

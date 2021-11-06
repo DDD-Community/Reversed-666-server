@@ -80,6 +80,9 @@ class markedBrandCountView(APIView):
     @swagger_auto_schema(tags=['담은 브랜드 API'])
     def post(self, request):
         serializer = likeBrandSerializer(data = request.data)
+        queryset = Brand.objects.get(id = request.data['brand'])
+        queryset.like_count +=1
+        queryset.save()
         if serializer.is_valid():
             try:
                 serializer.save()
