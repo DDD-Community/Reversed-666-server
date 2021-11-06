@@ -1,6 +1,8 @@
 from django.core import serializers
 from django.db.models import fields
 from rest_framework import serializers
+
+from user.serializer import UserIdNameSerializer, UserSerializer
 from .models import mainBrand, Brand, likedBrand
 
 # Brand 객체에서 필요한 부분만 선택해 직렬화한다.
@@ -9,6 +11,10 @@ class BrandSerializer(serializers.ModelSerializer):
         model = Brand
         fields = ['id', 'name', 'en_name', 'site_url', 'logo_url']
 
+class BrandIdNameSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Brand
+        fields = ['id', 'name', 'like_count']
 
 #### main브랜드 관련 serializers ####
 
@@ -23,14 +29,14 @@ class brandJoinSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = mainBrand
-        fields = ["brand_id"]
+        fields = ["brand"]
 
 # join된 정보에는 모두 brand_id column이 맨 앞에 붙어 있기에 제거해준다.
 class mainBrandSerializer(serializers.Serializer):
     brandList = serializers.SerializerMethodField()
 
     def get_brandList(self, obj):
-        data = list(map(lambda x : x['brand_id'], obj.list))
+        data = list(map(lambda x : x['brand'], obj.list))
         return data
 
 class swaggermainBrand(serializers.Serializer):
@@ -61,3 +67,12 @@ class clickCountSerializer(serializers.ModelSerializer):
         model = Brand
         fields = ["id", "name", "click_count"]
 
+class likeBrandSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = likedBrand
+        fields = ['user', 'brand']
+        
+    def to_representation(self, instance):
+        self.fields['user'] = UserIdNameSerializer(read_only = True)
+        self.fields['brand'] = BrandIdNameSerializer(read_only = True)
+        return super().to_representation(instance)

@@ -7,8 +7,9 @@ from rest_framework import filters, viewsets
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from django.utils.decorators import method_decorator
-from .serializer import BrandSerializer, brandJoinSerializer, clickCountSerializer, mainBrandSerializer, popularBrandSerializer, popularBrandType, mainBrandType, swaggermainBrand
-from .models import mainBrand, Brand
+from .serializer import BrandSerializer, brandJoinSerializer, clickCountSerializer, mainBrandSerializer, popularBrandSerializer, popularBrandType, mainBrandType, swaggermainBrand, likeBrandSerializer
+from .models import likedBrand, mainBrand, Brand
+from user.models import User
 
 class brandView(APIView):
     '''
@@ -48,7 +49,7 @@ class brandMainView(APIView):
     @swagger_auto_schema(tags=['브랜드 API'], responses = {200:swaggermainBrand})
     def get(self, request):
         query = mainBrand.objects.filter(Is_deleted = False)
-        query = query.select_related("brand_id")
+        query = query.select_related("brand")
         serializer = brandJoinSerializer(query, many = True)
         mainBrandInfo = mainBrandType(serializer.data)
         serializer = mainBrandSerializer(mainBrandInfo)
@@ -76,9 +77,26 @@ class markedBrandSearchView(APIView):
 
 
 class markedBrandCountView(APIView):
-    @swagger_auto_schema(tags=['담은 브랜드 API'])
+    @swagger_auto_schema(tags=['담은 브랜드 API'], 
+    request_body = openapi.Schema(type = openapi.TYPE_OBJECT,
+    properties = {
+        'user': openapi.Schema(type = openapi.TYPE_INTEGER, description = 'userId'),
+        'brand': openapi.Schema(type = openapi.TYPE_INTEGER, description = 'brandId')    
+    }),
+    responses = {200:likeBrandSerializer})
     def post(self, request):
-        return Response("브랜드를 북마크한 횟수를 카운팅합니다.", status = 200)
+        serializer = likeBrandSerializer(data = request.data)
+        queryset = Brand.objects.get(id = request.data['brand'])
+        queryset.like_count +=1
+        queryset.save()
+        if serializer.is_valid():
+            try:
+                serializer.save()
+            except Exception as ex:
+                return JsonResponse({"status": 404, "message" : str(ex)}, status = 404, safe = False)
+            else:
+                return JsonResponse(serializer.data, status = 200)
+        return JsonResponse(serializer.data, status = 404)
 
 class BrandCountView(APIView):
     @swagger_auto_schema(tags=['브랜드 API'], responses = {200: clickCountSerializer})
