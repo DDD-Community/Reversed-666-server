@@ -11,6 +11,11 @@ class BrandSerializer(serializers.ModelSerializer):
         model = Brand
         fields = ['id', 'name', 'en_name', 'site_url', 'logo_url']
 
+class mainBranditemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Brand
+        fields = ['id', 'name', 'en_name', 'site_url', 'logo_url', 'Img_url']
+
 class BrandIdNameSerializer(serializers.ModelSerializer):
     class Meta:
         model = Brand
@@ -25,7 +30,7 @@ class mainBrandType(object):
 
 # brands 테이블과 leftjoin된 brand_id 필드의 정보만 불러온다.
 class brandJoinSerializer(serializers.ModelSerializer):
-    brand = BrandSerializer(read_only = True)
+    brand = mainBranditemSerializer(read_only = True)
 
     class Meta:
         model = mainBrand
@@ -40,7 +45,7 @@ class mainBrandSerializer(serializers.Serializer):
         return data
 
 class swaggermainBrand(serializers.Serializer):
-    brandList = BrandSerializer(many = True)
+    brandList = mainBranditemSerializer(many = True)
     
 
 #### popular 브랜드 관련 serializers ####
