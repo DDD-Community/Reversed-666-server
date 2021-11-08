@@ -7,19 +7,48 @@ from rest_framework import filters, viewsets
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from django.utils.decorators import method_decorator
-from .serializer import BrandSerializer, brandJoinSerializer, clickCountSerializer, mainBrandSerializer, popularBrandSerializer, popularBrandType, mainBrandType, swaggermainBrand, likeBrandSerializer
+from .serializer import BrandSerializer, brandJoinSerializer, mainBranditemSerializer, likeBrandSerializer
 from .models import likedBrand, mainBrand, Brand
 from user.models import User
 
+response_schema_dict = {
+    "200": openapi.Response(
+        description="브랜드를 좋아요하는 데 성공했을 시",
+        examples={
+            "application/json": {
+                "status": "Success",
+            }
+        }
+    ),
+    "404": openapi.Response(
+        description="이미 좋아요한 항목을 다시 좋아요 했을 시",
+        examples={
+            "application/json": {
+                "status": "Fail",
+                "message": "(1062, \"Duplicate entry '10-2' for key 'liked_brands.unique user brand'\")"
+            }
+        }
+    ),
+    
+}
+
+
 class brandView(APIView):
     '''
-    brandId에 해당하는 브랜드 정보를 불러온다.
+    brandId에 해당하는 브랜드 정보를 불러오고, 브랜드 클릭 횟수를 증가시킨다.
     '''
     @swagger_auto_schema(tags=['브랜드 API'], responses = {200:BrandSerializer})
     def get(self, request, brandId):
-        query = Brand.objects.get(id = brandId)
-        serializer = BrandSerializer(query)
-        return JsonResponse(serializer.data, status = 200, safe = False)
+
+        try:
+            queryset = Brand.objects.get(id = brandId)
+        except Exception as ex:
+            return JsonResponse({"status": 404, "message" : str(ex)}, status = 404, safe = False)
+        else:
+            queryset.click_count += 1
+            queryset.save()
+            serializer = BrandSerializer(queryset)
+            return JsonResponse(serializer.data, status = 200, safe = False)
 
 class brandAddView(APIView):
     @swagger_auto_schema(tags=['브랜드 API'])
@@ -30,30 +59,25 @@ class brandPopularView(APIView):
     '''
     브랜드를 인기순으로 받아온다.
     '''
-    @swagger_auto_schema(tags=['브랜드 API'], 
-    manual_parameters=[openapi.Parameter('size', openapi.IN_QUERY, description="받아오고자 하는 브랜드의 개수", type = openapi.TYPE_STRING)],
-    responses = {200: popularBrandSerializer})
+    @swagger_auto_schema(tags=['브랜드 API'], responses = {200: BrandSerializer(many = True)})
     def get(self, request):
-        size = int(request.GET.get('size'))
+        size = 10
         query = Brand.objects.all().order_by('-click_count')[:size]
         serializer = BrandSerializer(query, many = True)
-        brandsInfo = popularBrandType(size, serializer.data)
-        serializer = popularBrandSerializer(brandsInfo)
-        
+
         return JsonResponse(serializer.data, status = 200, safe = False)
         
 class brandMainView(APIView):
     '''
     메인화면에 띄울 브랜드 리스트를 가져온다.
     '''
-    @swagger_auto_schema(tags=['브랜드 API'], responses = {200:swaggermainBrand})
+    @swagger_auto_schema(tags=['브랜드 API'], responses = {200:mainBranditemSerializer(many = True)})
     def get(self, request):
         query = mainBrand.objects.filter(Is_deleted = False)
         query = query.select_related("brand")
         serializer = brandJoinSerializer(query, many = True)
-        mainBrandInfo = mainBrandType(serializer.data)
-        serializer = mainBrandSerializer(mainBrandInfo)
-        return JsonResponse(serializer.data, status = 200, safe = False)
+        data = list(map(lambda x: x['brand'], serializer.data))
+        return JsonResponse(data, status = 200, safe = False)
 
 @method_decorator(name="list", decorator=swagger_auto_schema(tags=["브랜드 API"]))
 class brandSearchView(viewsets.ModelViewSet):
@@ -66,24 +90,24 @@ class brandSearchView(viewsets.ModelViewSet):
     search_fields = ['^name', '^en_name']
 
 class markedBrandView(APIView):
-    @swagger_auto_schema(tags=['담은 브랜드 API'])
+    @swagger_auto_schema(tags=['좋아요한 브랜드 API'])
     def get(self, request):
         return Response("북마크한 브랜드를 모아서 보여줍니다.", status = 200)
 
 class markedBrandSearchView(APIView):
-    @swagger_auto_schema(tags=['담은 브랜드 API'])
+    @swagger_auto_schema(tags=['좋아요한 브랜드 API'])
     def get(self, request):
         return Response("북마크한 브랜드 중에서 검색한 결과를 보여줍니다.", status = 200)
 
 
 class markedBrandCountView(APIView):
-    @swagger_auto_schema(tags=['담은 브랜드 API'], 
+    @swagger_auto_schema(tags=['좋아요한 브랜드 API'], 
     request_body = openapi.Schema(type = openapi.TYPE_OBJECT,
     properties = {
         'user': openapi.Schema(type = openapi.TYPE_INTEGER, description = 'userId'),
         'brand': openapi.Schema(type = openapi.TYPE_INTEGER, description = 'brandId')    
     }),
-    responses = {200:likeBrandSerializer})
+    responses = response_schema_dict)
     def post(self, request):
         '''
         브랜드 Id와 유저 Id를 받아와 좋아요 목록에 추가합니다.
@@ -96,24 +120,7 @@ class markedBrandCountView(APIView):
             try:
                 serializer.save()
             except Exception as ex:
-                return JsonResponse({"status": 404, "message" : str(ex)}, status = 404, safe = False)
+                return JsonResponse({"status": "Fail", "message" : str(ex)}, status = 404, safe = False)
             else:
-                return JsonResponse(serializer.data, status = 200)
-        return JsonResponse(serializer.data, status = 404)
-
-class BrandCountView(APIView):
-    @swagger_auto_schema(tags=['브랜드 API'], responses = {200: clickCountSerializer})
-
-    def post(self, request, brandId):
-        '''
-        브랜드 클릭횟수를 증가시킨다.
-        '''
-        try:
-            queryset = Brand.objects.get(id = brandId)
-        except Exception as ex:
-            return JsonResponse({"status": 404, "message" : str(ex)}, status = 404, safe = False)
-        else:
-            queryset.click_count += 1
-            queryset.save()
-            serializer = clickCountSerializer(queryset)
-            return JsonResponse(serializer.data, status = 200, safe = False)
+                return JsonResponse({"status": "Success"}, status = 200)
+        return JsonResponse({"status": "Fail", "message" : "올바르지 않은 요청입니다."}, status = 404, safe = False)
