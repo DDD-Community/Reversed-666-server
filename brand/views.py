@@ -1,3 +1,4 @@
+from django.core import serializers
 from django.http.response import JsonResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -32,14 +33,7 @@ response_schema_dict = {
     
 }
 
-def Is_liked(request, brandId):
-    try:
-        Is_liked = likedBrand.objects.get(user = request.data["user"], brand = brandId)
-    except likedBrand.DoesNotExist:
-        Is_liked = False
-    else:
-        Is_liked = True
-    return Is_liked
+
 
 
 class brandView(APIView):
@@ -84,11 +78,8 @@ class brandMainView(APIView):
     def get(self, request):
         query = mainBrand.objects.filter(Is_deleted = False)
         query = query.select_related("brand")
-        serializer = brandJoinSerializer(query, many = True)
-        data = []
-        for x in serializer.data:
-            x['brand'].setdefault('Is_liked', Is_liked(request, x['brand']['id']))
-            data.append(x['brand'])
+        serializer = brandJoinSerializer(query, many = True, context={'user_id': request.data['user']})
+        data = list(map(lambda x : x['brand'], serializer.data))
         return JsonResponse(data, status = 200, safe = False)
 
 

@@ -12,9 +12,19 @@ class BrandSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'en_name', 'site_url', 'logo_url', 'click_count', 'like_count']
 
 class mainBranditemSerializer(serializers.ModelSerializer):
+    is_liked = serializers.SerializerMethodField()
+
+    def get_is_liked(self, obj):
+        try:
+            Is_liked = likedBrand.objects.get(user = self.context.get("user_id"), brand = obj.id)
+        except likedBrand.DoesNotExist:
+            Is_liked = False
+        else:
+            Is_liked = True
+        return Is_liked
     class Meta:
         model = Brand
-        fields = ['id', 'name', 'en_name', 'site_url', 'logo_url', 'Img_url']
+        fields = ['id', 'name', 'en_name', 'site_url', 'logo_url', 'Img_url', 'is_liked']
 
 class BrandIdNameSerializer(serializers.ModelSerializer):
     class Meta:
@@ -33,10 +43,14 @@ class MainBrandType:
 
 class brandJoinSerializer(serializers.ModelSerializer):
     brand = mainBranditemSerializer(read_only = True)
+    is_liked = serializers.SerializerMethodField()
 
+    def get_is_liked(self, obj):
+        return None
     class Meta:
         model = mainBrand
-        fields = ["brand"]
+        fields = ["brand", 'is_liked']
+
 
 #### clickCount 관련 serializers ####
 
