@@ -24,13 +24,15 @@ class BrandIdNameSerializer(serializers.ModelSerializer):
 #### main브랜드 관련 serializers ####
 
 # brands 테이블과 leftjoin된 brand_id 필드의 정보만 불러온다.
+
+class MainBrandType:
+    def __init__(self, brand, user):
+        self.brand = brand
+        self.user = user
+
+
 class brandJoinSerializer(serializers.ModelSerializer):
     brand = mainBranditemSerializer(read_only = True)
-    Is_liked = serializers.SerializerMethodField()
-
-    def get_Is_liked (self, obj, data):
-        likedBrand.objects.get(userId = data, )
-        return 
 
     class Meta:
         model = mainBrand

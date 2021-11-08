@@ -7,7 +7,7 @@ from rest_framework import filters, viewsets
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from django.utils.decorators import method_decorator
-from .serializer import BrandSerializer, brandJoinSerializer, mainBranditemSerializer, likeBrandSerializer
+from .serializer import BrandSerializer, brandJoinSerializer, mainBranditemSerializer, likeBrandSerializer, MainBrandType
 from .models import likedBrand, mainBrand, Brand
 from user.models import User
 
@@ -31,6 +31,15 @@ response_schema_dict = {
     ),
     
 }
+
+def Is_liked(request, brandId):
+    try:
+        Is_liked = likedBrand.objects.get(user = request.data["user"], brand = brandId)
+    except likedBrand.DoesNotExist:
+        Is_liked = False
+    else:
+        Is_liked = True
+    return Is_liked
 
 
 class brandView(APIView):
@@ -76,8 +85,12 @@ class brandMainView(APIView):
         query = mainBrand.objects.filter(Is_deleted = False)
         query = query.select_related("brand")
         serializer = brandJoinSerializer(query, many = True)
-        data = list(map(lambda x: x['brand'], serializer.data))
+        data = []
+        for x in serializer.data:
+            x['brand'].setdefault('Is_liked', Is_liked(request, x['brand']['id']))
+            data.append(x['brand'])
         return JsonResponse(data, status = 200, safe = False)
+
 
 @method_decorator(name="list", decorator=swagger_auto_schema(tags=["브랜드 API"]))
 class brandSearchView(viewsets.ModelViewSet):
