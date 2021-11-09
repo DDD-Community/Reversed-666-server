@@ -9,6 +9,6 @@ urlpatterns = [
     path("brands/main/", brandMainView.as_view(), name = "GetmainBrands"),
     path("brands/search", brandSearchView.as_view({'get': 'list'}), name = "GetmainBrands"),
     path("brands/liked", markedBrandView.as_view(), name = "GetmainBrands"),
-    path("brands/liked/<search>", markedBrandSearchView.as_view(), name = "GetmainBrands"),
+    path("brands/liked/search", markedBrandSearchView.as_view({'get': 'list'}), name = "GetmainBrands"),
     path("brand/like", markedBrandCountView.as_view(), name = "PostmainBrands"),
 ]

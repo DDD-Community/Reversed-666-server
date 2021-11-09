@@ -97,19 +97,28 @@ class brandSearchView(viewsets.ModelViewSet):
 
 class markedBrandView(APIView):
     @swagger_auto_schema(tags=['좋아요한 브랜드 API'],
+    manual_parameters=[openapi.Parameter('userId', openapi.IN_QUERY, description = "유저 아이디", type = openapi.TYPE_INTEGER)],
     responses = {200:getlikeBrandSerializer}
     )
     def get(self, request):
+        '''
+        query param으로 입력받은 유저가 좋아요한 브랜드 리스트를 보여준다.
+        '''
         userId = request.GET.get('userId')
         query = likedBrand.objects.filter(user = userId, Is_deleted = False)
         query = query.select_related("brand")
         serializer = getlikeBrandSerializer(query, many = True)
         return JsonResponse(serializer.data, safe = False)
 
-class markedBrandSearchView(APIView):
-    @swagger_auto_schema(tags=['좋아요한 브랜드 API'])
-    def get(self, request):
-        return Response("북마크한 브랜드 중에서 검색한 결과를 보여줍니다.", status = 200)
+@method_decorator(name = "list", decorator=swagger_auto_schema(tags=["좋아요한 브랜드 API"]))
+class markedBrandSearchView(viewsets.ModelViewSet):
+    '''
+    유저가 좋아요한 브랜드 중 검색 키워드를 받아 해당하는 브랜드 리스트를 돌려준다.
+    '''
+    queryset = Brand.objects.all()
+    serializer_class = BrandSerializer
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['^name', '^en_name']
 
 
 class markedBrandCountView(APIView):
@@ -122,7 +131,7 @@ class markedBrandCountView(APIView):
     responses = response_schema_dict)
     def post(self, request):
         '''
-        브랜드 Id와 유저 Id를 받아와 좋아요 목록에 추가합니다.
+        브랜드 Id와 유저 Id를 받아와 좋아요 목록에 추가한다.
         '''
         serializer = postlikeBrandSerializer(data = request.data)
         queryset = Brand.objects.get(id = request.data['brand'])
