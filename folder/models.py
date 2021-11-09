@@ -4,9 +4,9 @@ from user.models import User
 # Create your models here.
 class Folder(models.Model):
     id = models.BigAutoField(primary_key=True, verbose_name='Product_id')
-    user_id = models.ForeignKey(User, null = True, blank = False, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, null = True, blank = False, on_delete=models.CASCADE)
     name = models.CharField(null=False, max_length=255, verbose_name='폴더 이름')
-    description = models.CharField(null=True, max_length=255, verbose_name='폴더 설명')
+    description = models.CharField(null=True, blank = True, max_length=255, verbose_name='폴더 설명')
 
     created_at = models.DateTimeField(null = False, auto_now_add=True, verbose_name='생성된 날짜')
     updated_at = models.DateTimeField(null = True, auto_now=True, verbose_name='수정된 날짜')

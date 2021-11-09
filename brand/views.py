@@ -14,7 +14,7 @@ from user.models import User
 
 response_schema_dict = {
     "200": openapi.Response(
-        description="브랜드를 좋아요하는 데 성공했을 시",
+        description="DB 저장에 성공했을 시",
         examples={
             "application/json": {
                 "status": "Success",
@@ -22,11 +22,11 @@ response_schema_dict = {
         }
     ),
     "404": openapi.Response(
-        description="이미 좋아요한 항목을 다시 좋아요 했을 시",
+        description="DB 저장에 실패했을 시",
         examples={
             "application/json": {
                 "status": "Fail",
-                "message": "(1062, \"Duplicate entry '10-2' for key 'liked_brands.unique user brand'\")"
+                "message": "error message (상황에 따라 다름)"
             }
         }
     ),
