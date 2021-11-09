@@ -14,7 +14,7 @@ from brand.views import response_schema_dict
 class foldersView(APIView):
     @swagger_auto_schema(tags=['폴더 API'],
     manual_parameters=[openapi.Parameter('userId', openapi.IN_QUERY, description = "유저 아이디", type = openapi.TYPE_INTEGER)],    
-    responses = {200:FolderSerializer}
+    responses = {200:FolderSerializer(many = True)}
     )
     def get(self, request):
         '''
@@ -49,6 +49,10 @@ class foldersView(APIView):
         return JsonResponse({"status": "Fail", "message" : "올바르지 않은 요청입니다."}, status = 404, safe = False)
     
 class folderView(APIView):
-    @swagger_auto_schema(tags=['폴더 API'])
+    @swagger_auto_schema(tags=['폴더 API'],
+    responses = {200:FolderSerializer}
+    )
     def get(self, request, folderId):
-        return Response(f"폴더아이디 {folderId}에 해당하는 폴더의 정보를 가져옵니다.")
+        queryset  = Folder.objects.get(id = folderId)
+        serializer = FolderSerializer(queryset)
+        return JsonResponse(serializer.data, status = 200, safe = False)
