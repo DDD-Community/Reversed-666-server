@@ -80,6 +80,7 @@ class brandMainView(APIView):
     def get(self, request):
         query = mainBrand.objects.filter(Is_deleted = False)
         query = query.select_related("brand")
+        print(request.GET.get('userId'))
         serializer = brandJoinSerializer(query, many = True, context={'userId': request.GET.get('userId')})
         data = list(map(lambda x : x['brand'], serializer.data))
         return JsonResponse(data, status = 200, safe = False)

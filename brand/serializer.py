@@ -16,7 +16,7 @@ class mainBranditemSerializer(serializers.ModelSerializer):
 
     def get_is_liked(self, obj):
         try:
-            Is_liked = likedBrand.objects.get(user = self.context.get("user_id"), brand = obj.id)
+            Is_liked = likedBrand.objects.get(user = self.context.get("userId"), brand = obj.id)
         except likedBrand.DoesNotExist:
             Is_liked = False
         else:
