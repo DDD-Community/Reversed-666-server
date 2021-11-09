@@ -8,7 +8,7 @@ from rest_framework import filters, viewsets
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from django.utils.decorators import method_decorator
-from .serializer import BrandSerializer, brandJoinSerializer, mainBranditemSerializer, likeBrandSerializer, MainBrandType
+from .serializer import BrandSerializer, brandJoinSerializer, mainBranditemSerializer, postlikeBrandSerializer, getlikeBrandSerializer
 from .models import likedBrand, mainBrand, Brand
 from user.models import User
 
@@ -80,7 +80,6 @@ class brandMainView(APIView):
     def get(self, request):
         query = mainBrand.objects.filter(Is_deleted = False)
         query = query.select_related("brand")
-        print(request.GET.get('userId'))
         serializer = brandJoinSerializer(query, many = True, context={'userId': request.GET.get('userId')})
         data = list(map(lambda x : x['brand'], serializer.data))
         return JsonResponse(data, status = 200, safe = False)
@@ -97,9 +96,15 @@ class brandSearchView(viewsets.ModelViewSet):
     search_fields = ['^name', '^en_name']
 
 class markedBrandView(APIView):
-    @swagger_auto_schema(tags=['좋아요한 브랜드 API'])
+    @swagger_auto_schema(tags=['좋아요한 브랜드 API'],
+    responses = {200:getlikeBrandSerializer}
+    )
     def get(self, request):
-        return Response("북마크한 브랜드를 모아서 보여줍니다.", status = 200)
+        userId = request.GET.get('userId')
+        query = likedBrand.objects.filter(user = userId, Is_deleted = False)
+        query = query.select_related("brand")
+        serializer = getlikeBrandSerializer(query, many = True)
+        return JsonResponse(serializer.data, safe = False)
 
 class markedBrandSearchView(APIView):
     @swagger_auto_schema(tags=['좋아요한 브랜드 API'])
@@ -119,7 +124,7 @@ class markedBrandCountView(APIView):
         '''
         브랜드 Id와 유저 Id를 받아와 좋아요 목록에 추가합니다.
         '''
-        serializer = likeBrandSerializer(data = request.data)
+        serializer = postlikeBrandSerializer(data = request.data)
         queryset = Brand.objects.get(id = request.data['brand'])
         queryset.like_count +=1
         queryset.save()
