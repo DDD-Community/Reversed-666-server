@@ -74,11 +74,13 @@ class brandMainView(APIView):
     '''
     메인화면에 띄울 브랜드 리스트를 가져온다.
     '''
-    @swagger_auto_schema(tags=['브랜드 API'], responses = {200:mainBranditemSerializer(many = True)})
+    @swagger_auto_schema(tags=['브랜드 API'], 
+    manual_parameters=[openapi.Parameter('userId', openapi.IN_QUERY, description = "유저 아이디", type = openapi.TYPE_INTEGER)],
+    responses = {200:mainBranditemSerializer(many = True)})
     def get(self, request):
         query = mainBrand.objects.filter(Is_deleted = False)
         query = query.select_related("brand")
-        serializer = brandJoinSerializer(query, many = True, context={'user_id': request.data['user']})
+        serializer = brandJoinSerializer(query, many = True, context={'userId': request.GET.get('userId')})
         data = list(map(lambda x : x['brand'], serializer.data))
         return JsonResponse(data, status = 200, safe = False)
 
