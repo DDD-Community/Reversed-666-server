@@ -18,7 +18,7 @@ class foldersView(APIView):
     )
     def get(self, request):
         '''
-        userId에 해당하는 폴더 리스트를 받아옵니다.
+        userId에 해당하는 폴더 리스트를 받아온다.
         '''
         userId = request.GET.get('userId')
         queryset= Folder.objects.filter(user = userId, Is_deleted = False)
@@ -36,7 +36,7 @@ class foldersView(APIView):
     )
     def post(self, request):
         '''
-        새로운 폴더를 만듭니다.
+        새로운 폴더를 만든다.
         '''
         serializer = postFolderSerializer(data = request.data)
         if serializer.is_valid():
@@ -53,6 +53,9 @@ class folderView(APIView):
     responses = {200:FolderSerializer}
     )
     def get(self, request, folderId):
+        '''
+        폴더 아이디에 맞는 단일 폴더 정보를 가져온다.
+        '''
         queryset  = Folder.objects.get(id = folderId)
         serializer = FolderSerializer(queryset)
         return JsonResponse(serializer.data, status = 200, safe = False)
