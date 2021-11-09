@@ -8,14 +8,23 @@ from rest_framework import status
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from .models import Folder
-from .serializer import postFolderSerializer
+from .serializer import postFolderSerializer, FolderSerializer
 from brand.views import response_schema_dict
 
 class foldersView(APIView):
-    @swagger_auto_schema(tags=['폴더 API'])
+    @swagger_auto_schema(tags=['폴더 API'],
+    manual_parameters=[openapi.Parameter('userId', openapi.IN_QUERY, description = "유저 아이디", type = openapi.TYPE_INTEGER)],    
+    responses = {200:FolderSerializer}
+    )
     def get(self, request):
-        return Response("사용자의 모든 폴더를 가져옵니다")
-
+        '''
+        userId에 해당하는 폴더 리스트를 받아옵니다.
+        '''
+        userId = request.GET.get('userId')
+        queryset= Folder.objects.filter(user = userId, Is_deleted = False)
+        serializer = FolderSerializer(queryset, many = True)
+        return JsonResponse(serializer.data, status = 200, safe = False)
+    
     @swagger_auto_schema(tags=['폴더 API'], 
     request_body = openapi.Schema(type = openapi.TYPE_OBJECT,
     properties = {
@@ -38,7 +47,7 @@ class foldersView(APIView):
             else:
                 return JsonResponse({"status": "Success"}, status = 200)
         return JsonResponse({"status": "Fail", "message" : "올바르지 않은 요청입니다."}, status = 404, safe = False)
-
+    
 class folderView(APIView):
     @swagger_auto_schema(tags=['폴더 API'])
     def get(self, request, folderId):
