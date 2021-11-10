@@ -9,7 +9,7 @@ from .models import mainBrand, Brand, likedBrand
 class BrandSerializer(serializers.ModelSerializer):
     class Meta:
         model = Brand
-        fields = ['id', 'name', 'en_name', 'site_url', 'logo_url', 'click_count', 'like_count']
+        fields = ['id', 'name', 'en_name', 'site_url', 'logo_url']
 
 class mainBranditemSerializer(serializers.ModelSerializer):
     is_liked = serializers.SerializerMethodField()

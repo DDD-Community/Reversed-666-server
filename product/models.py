@@ -7,10 +7,10 @@ from brand.models import Brand, addedBrand, likedBrand
 
 class Product(models.Model):
     id = models.BigAutoField(primary_key=True, verbose_name='Product_id')
-    user_id = models.ForeignKey(User, null = True, blank = False, on_delete=models.CASCADE)
-    folder_id = models.ForeignKey(Folder, null = True, blank = False, on_delete=models.CASCADE)
-    brand_id = models.ForeignKey(Brand, null = True, blank = True, on_delete=models.CASCADE)
-    added_brand_id = models.ForeignKey(addedBrand, null = True, blank = True, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, null = True, blank = False, on_delete=models.CASCADE)
+    folder = models.ForeignKey(Folder, null = True, blank = False, on_delete=models.CASCADE)
+    brand = models.ForeignKey(Brand, null = True, blank = True, on_delete=models.CASCADE)
+    added_brand = models.ForeignKey(addedBrand, null = True, blank = True, on_delete=models.CASCADE)
 
     name = models.CharField(null=True, max_length=255, verbose_name='상품 이름')
     price = models.CharField(null=True, max_length=255, verbose_name='상품 가격')
