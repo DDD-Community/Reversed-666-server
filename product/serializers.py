@@ -2,6 +2,11 @@ from .models import *
 from rest_framework import serializers
 from brand.serializer import BrandSerializer
 
+class productImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = ['image_url']
+
 class ProductSerializer(serializers.ModelSerializer):
     brand = BrandSerializer(read_only = True)
     class Meta:
