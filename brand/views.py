@@ -32,9 +32,6 @@ response_schema_dict = {
     ),
 }
 
-
-
-
 class brandView(APIView):
     '''
     brandId에 해당하는 브랜드 정보를 불러오고, 브랜드 클릭 횟수를 증가시킨다.
@@ -53,15 +50,17 @@ class brandView(APIView):
             return JsonResponse(serializer.data, status = 200, safe = False)
 
 class brandAddView(APIView):
-    @swagger_auto_schema(tags=['브랜드 API'])
+    @swagger_auto_schema(tags=['브랜드 API'], )
     def post(self, request):
+        '''
+        유저가 브랜드를 추가하는 API
+        '''
         serializer = addedBrandSerializer(data = request.data)
         if serializer.is_valid():
             try:
                 serializer.save()
                 user = User.objects.get(id = request.data['user'])
                 added_brand = addedBrand.objects.get(id = serializer.data['id'])
-                print(serializer.data['id'])
                 query = likedBrand.objects.create(user = user, added_brand = added_brand)
             except Exception as ex:
                 return JsonResponse({"status": "Fail", "message" : str(ex)}, status = 404, safe = False)
@@ -117,7 +116,7 @@ class markedBrandView(APIView):
         '''
         userId = request.GET.get('userId')
         query = likedBrand.objects.filter(user = userId, Is_deleted = False)
-        query = query.select_related("brand")
+        query = query.select_related("brand", "added_brand")
         serializer = getlikeBrandSerializer(query, many = True)
         return JsonResponse(serializer.data, safe = False)
 
@@ -126,8 +125,8 @@ class markedBrandSearchView(viewsets.ModelViewSet):
     '''
     유저가 좋아요한 브랜드 중 검색 키워드를 받아 해당하는 브랜드 리스트를 돌려준다.
     '''
-    queryset = Brand.objects.all()
-    serializer_class = BrandSerializer
+    queryset = likedBrand.objects.all()
+    serializer_class = getlikeBrandSerializer
     filter_backends = [filters.SearchFilter]
     search_fields = ['^name', '^en_name']
 

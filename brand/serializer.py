@@ -77,6 +77,15 @@ class postlikeBrandSerializer(serializers.ModelSerializer):
 
 class getlikeBrandSerializer(serializers.ModelSerializer):
     brand = BrandSerializer(read_only = True)
+    added_brand = addedBrandSerializer(read_only = True)
+    Is_added = serializers.SerializerMethodField()
+
+    def get_Is_added (self, obj):
+        if (obj.brand and not obj.added_brand):
+            return False
+        elif (not obj.brand and obj.added_brand):
+            return True
+
     class Meta:
         model = likedBrand
-        fields = ['id', 'brand']
+        fields = ['id', 'Is_added', 'brand' , 'added_brand']
