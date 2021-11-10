@@ -1,6 +1,6 @@
 from django.core import serializers
 from django.db.models import fields
-from rest_framework import serializers
+from rest_framework import generics, serializers
 
 from user.serializer import UserIdNameSerializer, UserSerializer
 from .models import mainBrand, Brand, likedBrand, addedBrand
@@ -89,3 +89,25 @@ class getlikeBrandSerializer(serializers.ModelSerializer):
     class Meta:
         model = likedBrand
         fields = ['id', 'Is_added', 'brand' , 'added_brand']
+
+class GlobalSearchSerializer(serializers.ModelSerializer):
+    Is_added = serializers.SerializerMethodField()
+
+    def get_Is_added (self, obj):
+        if isinstance(obj, addedBrand):
+            return True
+        elif isinstance(obj, Brand):
+            return False
+
+    class Meta:
+      model = Brand
+      exclude = ['created_at', 'updated_at', 'deleted_at', 'Is_deleted', 'click_count', 'like_count']
+
+    def to_native(self, obj):
+      if isinstance(obj, addedBrand): 
+         serializer = addedBrandSerializer(obj)
+      elif isinstance(obj, Brand):
+         serializer = BrandSerializer(obj)
+      else:
+         raise Exception("Neither a Snippet nor User instance!")
+      return serializer.data

@@ -1,16 +1,18 @@
 from django.core import serializers
 from django.http.response import JsonResponse
+from django.db.models import Q
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import authentication, permissions
+from rest_framework import authentication, generics, permissions
 from django.shortcuts import render
 from rest_framework import filters, viewsets
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from django.utils.decorators import method_decorator
-from .serializer import BrandSerializer, brandJoinSerializer, mainBranditemSerializer, postlikeBrandSerializer, getlikeBrandSerializer, addedBrandSerializer
+from .serializer import BrandSerializer, brandJoinSerializer, mainBranditemSerializer, postlikeBrandSerializer, getlikeBrandSerializer, addedBrandSerializer, GlobalSearchSerializer
 from .models import addedBrand, likedBrand, mainBrand, Brand
 from user.models import User
+from itertools import chain
 
 response_schema_dict = {
     "200": openapi.Response(
@@ -121,14 +123,19 @@ class markedBrandView(APIView):
         return JsonResponse(serializer.data, safe = False)
 
 @method_decorator(name = "list", decorator=swagger_auto_schema(tags=["좋아요한 브랜드 API"]))
-class markedBrandSearchView(viewsets.ModelViewSet):
+class markedBrandSearchView(generics.ListAPIView):
     '''
     유저가 좋아요한 브랜드 중 검색 키워드를 받아 해당하는 브랜드 리스트를 돌려준다.
     '''
-    queryset = likedBrand.objects.all()
-    serializer_class = getlikeBrandSerializer
-    filter_backends = [filters.SearchFilter]
-    search_fields = ['^name', '^en_name']
+    serializer_class = GlobalSearchSerializer
+
+    def get_queryset(self):
+        query = self.request.query_params.get('search', None)
+        addedbrand = addedBrand.objects.filter(Q(name__icontains=query) | Q(en_name__icontains=query))
+        brand = Brand.objects.filter(Q(name__icontains=query) | Q(en_name__icontains=query))
+        all_results = list(chain(addedbrand, brand)) 
+        all_results.sort(key=lambda x: x.created_at)
+        return all_results
 
 
 class markedBrandCountView(APIView):
