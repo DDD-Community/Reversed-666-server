@@ -122,16 +122,18 @@ class markedBrandView(APIView):
         serializer = getlikeBrandSerializer(query, many = True)
         return JsonResponse(serializer.data, safe = False)
 
-@method_decorator(name = "list", decorator=swagger_auto_schema(tags=["좋아요한 브랜드 API"]))
+@method_decorator(name = "get_queryset", decorator=swagger_auto_schema(tags=["좋아요한 브랜드 API"]))
 class markedBrandSearchView(generics.ListAPIView):
     '''
     유저가 좋아요한 브랜드 중 검색 키워드를 받아 해당하는 브랜드 리스트를 돌려준다.
     '''
     serializer_class = GlobalSearchSerializer
-
     def get_queryset(self):
+        #미작업내용 : brands결과 유저별로 다르게 보여주는 것. liked brand를 join해서 가져오는 게 나을 듯 하다.
         query = self.request.query_params.get('search', None)
+        user = self.request.query_params.get('userId', None)
         addedbrand = addedBrand.objects.filter(Q(name__icontains=query) | Q(en_name__icontains=query))
+        addedbrand = addedbrand.filter(user = user)
         brand = Brand.objects.filter(Q(name__icontains=query) | Q(en_name__icontains=query))
         all_results = list(chain(addedbrand, brand)) 
         all_results.sort(key=lambda x: x.created_at)
