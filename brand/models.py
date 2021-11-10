@@ -50,7 +50,7 @@ class addedBrand(models.Model):
 class likedBrand(models.Model):
     id = models.BigAutoField(primary_key=True, verbose_name='브랜드 id')
     user = models.ForeignKey(User, null = False, blank = False, on_delete=models.CASCADE)
-    brand = models.ForeignKey(Brand, null = False, blank = True,  on_delete=models.CASCADE)
+    brand = models.ForeignKey(Brand, null = True, blank = True,  on_delete=models.CASCADE)
     added_brand = models.ForeignKey(addedBrand, null = True, blank = True, on_delete=models.CASCADE)
 
     created_at = models.DateTimeField(null = False, auto_now_add=True, verbose_name='생성된 날짜')

@@ -36,8 +36,11 @@ class ProductPostView(APIView):
 
     
 class ProductGetView(APIView):
-    @swagger_auto_schema(tags=['상품 API'])
+    @swagger_auto_schema(tags=['상품 API'], responses = {200:ProductSerializer})
     def get(self, request, folderId):
+        '''
+        폴더 아이디에 맞는 상품들의 리스트를 불러온다.
+        '''
         queryset = Product.objects.filter(id = folderId, Is_deleted = False)
         queryset = queryset.select_related("brand")
         serializer = ProductSerializer(queryset, many = True)

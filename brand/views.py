@@ -8,8 +8,8 @@ from rest_framework import filters, viewsets
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from django.utils.decorators import method_decorator
-from .serializer import BrandSerializer, brandJoinSerializer, mainBranditemSerializer, postlikeBrandSerializer, getlikeBrandSerializer
-from .models import likedBrand, mainBrand, Brand
+from .serializer import BrandSerializer, brandJoinSerializer, mainBranditemSerializer, postlikeBrandSerializer, getlikeBrandSerializer, addedBrandSerializer
+from .models import addedBrand, likedBrand, mainBrand, Brand
 from user.models import User
 
 response_schema_dict = {
@@ -30,7 +30,6 @@ response_schema_dict = {
             }
         }
     ),
-    
 }
 
 
@@ -56,7 +55,19 @@ class brandView(APIView):
 class brandAddView(APIView):
     @swagger_auto_schema(tags=['브랜드 API'])
     def post(self, request):
-        return Response("브랜드의 정보를 받아와 추가합니다", status = 200)
+        serializer = addedBrandSerializer(data = request.data)
+        if serializer.is_valid():
+            try:
+                serializer.save()
+                user = User.objects.get(id = request.data['user'])
+                added_brand = addedBrand.objects.get(id = serializer.data['id'])
+                print(serializer.data['id'])
+                query = likedBrand.objects.create(user = user, added_brand = added_brand)
+            except Exception as ex:
+                return JsonResponse({"status": "Fail", "message" : str(ex)}, status = 404, safe = False)
+            else:
+                return JsonResponse({"status": "Success"}, status = 200)
+        return JsonResponse({"status": "Fail", "message" : "올바르지 않은 요청입니다."}, status = 404, safe = False)
 
 class brandPopularView(APIView):
     '''

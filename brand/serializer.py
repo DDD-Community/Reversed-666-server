@@ -3,13 +3,18 @@ from django.db.models import fields
 from rest_framework import serializers
 
 from user.serializer import UserIdNameSerializer, UserSerializer
-from .models import mainBrand, Brand, likedBrand
+from .models import mainBrand, Brand, likedBrand, addedBrand
 
 # Brand 객체에서 필요한 부분만 선택해 직렬화한다.
 class BrandSerializer(serializers.ModelSerializer):
     class Meta:
         model = Brand
         fields = ['id', 'name', 'en_name', 'site_url', 'logo_url']
+
+class addedBrandSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = addedBrand
+        fields = ['id', 'name', 'en_name', 'site_url', 'logo_url', 'user']
 
 class mainBranditemSerializer(serializers.ModelSerializer):
     is_liked = serializers.SerializerMethodField()
