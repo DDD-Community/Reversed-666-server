@@ -25,6 +25,14 @@ class ProductPostView(APIView):
         '''
         상품을 좋아요 리스트에 추가한다.
         '''
+        product = productOpengraph(request.data['site_url'])
+        query = Product.objects.create(
+            name = product.title , price = product.price_amount, image_url = product.image, site_url = product.url
+            )
+        return JsonResponse({"status": "Success"}, status = 200)
+
+
+        '''
         serializer = postProductSerializer(data = request.data)
         if serializer.is_valid():
             try:
@@ -34,7 +42,7 @@ class ProductPostView(APIView):
             else:
                 return JsonResponse({"status": "Success"}, status = 200)
         return JsonResponse({"status": "Fail", "message" : "올바르지 않은 요청입니다."}, status = 404, safe = False)
-
+        '''
     
 class ProductGetView(APIView):
     @swagger_auto_schema(tags=['상품 API'], responses = {200:ProductSerializer})
@@ -42,8 +50,6 @@ class ProductGetView(APIView):
         '''
         폴더 아이디에 맞는 상품들의 리스트를 불러온다.
         '''
-        product = productOpengraph("https://www.osulloc.com/kr/ko/shop/item/teashop/15203")
-        print(product)
         queryset = Product.objects.filter(id = folderId, Is_deleted = False)
         queryset = queryset.select_related("brand")
         serializer = ProductSerializer(queryset, many = True)

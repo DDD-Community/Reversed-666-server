@@ -15,6 +15,7 @@ class ProductSerializer(serializers.ModelSerializer):
         exclude = ['deleted_at', 'Is_deleted', 'created_at', 'updated_at', 'user', 'folder']
 
 class postProductSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Product
         fields = ['user', 'folder', 'brand', 'added_brand', 'name', 'price', 'image_url', 'site_url']

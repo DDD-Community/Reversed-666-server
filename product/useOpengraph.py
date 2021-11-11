@@ -6,7 +6,7 @@ class productOpengraph(dict):
     """
     """
 
-    required_attrs = ['image', 'title',  'price_currency', 'price_amount']
+    required_attrs = ['image', 'title', 'url', 'price_currency', 'price_amount']
 
     def __init__(self, url=None, scrape=True, **kwargs):
         # scrape == True면 missing arguments를 body에서 스크랩해 가져온다.
@@ -100,7 +100,3 @@ class productOpengraph(dict):
 
     def scrape_price_currency(self, doc):
         return "원"
-
-url = "https://www.goldendewshop.com/product/%ED%88%AC%EC%98%A4%EB%B8%8C%ED%95%98%ED%8A%B83%EB%A3%A8%EB%B9%84-%EB%B0%98%EC%A7%80/3909/category/27/display/1/"
-product = productOpengraph(url)
-print(product)
