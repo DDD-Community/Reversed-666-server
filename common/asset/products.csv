@@ -1,0 +1,26 @@
+,,,,감지되는지 여부,,
+ex) 아디다스,ex) adidas,ex) http://shop.adidas.co.kr,"스포츠,패션",,,
+나이키,nike,http://www.nike.com/kr,"스포츠,패션",X -> X,svg 태그 사용,svg 안불러와짐
+메종 마르지엘라,maisonmargiela,http://www.maisonmargiela.com/kr,패션,X,크롤링 자체가 불가,
+스와로브스키,swarovski,http://www.swarovski.com,패션잡화,O,,
+구찌,gucci,http://www.gucci.com/kr,패션,X,크롤링 자체가 불가,
+어프어프,earp earp,http://m.earpearp.com/,"디지털,문구",O,,
+이케아,Ikea,https://www.ikea.com/kr/ko/,"가구,홈데코",O,,
+러쉬,Lush,https://m.lush.co.kr,뷰티,X -> O,h1 태그에 logo,
+폴로 랄프로렌,POLO Ralph Lauren,https://www.ralphlauren.co.kr/ko,패션,O,,
+룰루레몬,Lululemon,https://www.lululemon.co.kr/ko-kr/home/,"스포츠,패션",O,,
+레이카,Leica,https://www.leica-store.co.kr/main/main.asp,디지털,X -> X,h1 태그에 logo,스타일 태그
+루이스폴센,Louis Poulsen,https://www.louispoulsen.com/ko-kr/private,"가구,홈데코",X -> X,svg 태그 사용,svg 안불러와짐
+골든듀,Golden dew,https://goldendew.com/brand_mw/main.php,패션잡화,O,,
+영실업,Youngtoys,https://m.youngtoysmall.com,키즈,O,,
+뱅앤올룹순,Bang&Olufsen,https://www.bnostore.co.kr,"가구,디지털,홈데코",O,,
+레고,Lego,https://www.lego.com,키즈,O,,
+타미힐피거,Tommy Hilfiger,https://global.tommy.com,패션,O,,
+쿡킷,Cj Cookit,https://m.cjcookit.com/mo/main,식품,X -> X,파일이 없음,스타일 태그
+오설록,Osulloc,https://www.osulloc.com/kr/ko,식품,O,,
+웨버,Weber,https://www.bbqtown.co.kr/m2/index.php,레저,O,,
+헬렌카민스키,Helen Kaminski,https://m.helenkaminski.co.kr,"패션,패션잡화",O,,
+젠틀몬스터,Gentle Monster,https://www.gentlemonster.com,패션잡화,X -> O,svg 태그 사용,
+오티에이치콤마,"Oth,",https://othcomma.kr,홈데코,O,,
+오롤리데이,"oh, lolly day!",https://www.oh-lolly-day.com/,"문구,패션",O,,
+메종 키츠네,Maison-Kitsune,https://maisonkitsune.com,패션,O,,

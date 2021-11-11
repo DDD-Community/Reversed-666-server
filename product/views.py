@@ -9,6 +9,7 @@ from .models import Product
 from .serializers import ProductSerializer, postProductSerializer
 from drf_yasg.utils import swagger_auto_schema
 from brand.views import response_schema_dict
+from .useOpengraph import productOpengraph
 
 class ProductPostView(APIView):
     @swagger_auto_schema(tags=['상품 API'],
@@ -41,6 +42,8 @@ class ProductGetView(APIView):
         '''
         폴더 아이디에 맞는 상품들의 리스트를 불러온다.
         '''
+        product = productOpengraph("https://www.osulloc.com/kr/ko/shop/item/teashop/15203")
+        print(product)
         queryset = Product.objects.filter(id = folderId, Is_deleted = False)
         queryset = queryset.select_related("brand")
         serializer = ProductSerializer(queryset, many = True)
