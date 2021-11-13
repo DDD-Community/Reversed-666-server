@@ -20,11 +20,12 @@ class ProductPostView(APIView):
         'folder': openapi.Schema(type = openapi.TYPE_INTEGER, description = '폴더 id'),
         'site_url': openapi.Schema(type = openapi.TYPE_INTEGER, description = '상품 링크')    
     }),
+    manual_parameters=[openapi.Parameter('Authorization', openapi.IN_HEADER, description="유저 익명 아이디 ex) 51131230-d4b6-48f9-8807-b83f27f4b825", type=openapi.TYPE_STRING)],
     responses = response_schema_dict
     )
     def post(self, request):
         '''
-        상품을 좋아요 리스트에 추가한다.
+        상품 이미지와 이름, 가격을 가져와 DB 좋아요 리스트에 추가한다.
         '''
         anonymousId = request.META['HTTP_AUTHORIZATION']
         product = productOpengraph(request.data['site_url'])
@@ -55,7 +56,7 @@ class ProductGetView(APIView):
         '''
         폴더 아이디에 맞는 상품들의 리스트를 불러온다.
         '''
-        queryset = Product.objects.filter(id = folderId, Is_deleted = False)
+        queryset = Product.objects.filter(folder = folderId, Is_deleted = False)
         queryset = queryset.select_related("brand")
         serializer = ProductSerializer(queryset, many = True)
         return JsonResponse(serializer.data, safe = False)

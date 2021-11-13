@@ -53,10 +53,18 @@ class brandView(APIView):
             return JsonResponse(serializer.data, status = 200, safe = False)
 
 class brandAddView(APIView):
-    @swagger_auto_schema(tags=['브랜드 API'], )
+    @swagger_auto_schema(tags=['브랜드 API'], 
+    request_body = openapi.Schema(type = openapi.TYPE_OBJECT,
+    properties = {
+        'name': openapi.Schema(type = openapi.TYPE_STRING, description = '브랜드 이름'),
+        'en_name': openapi.Schema(type = openapi.TYPE_STRING, description = '브랜드 영어 이름'),
+        'site_url': openapi.Schema(type = openapi.TYPE_STRING, description = '브랜드 주소')          
+    }),
+    manual_parameters=[openapi.Parameter('Authorization', openapi.IN_HEADER, description="유저 익명 아이디 ex) 51131230-d4b6-48f9-8807-b83f27f4b825", type=openapi.TYPE_STRING)]
+    , responses = response_schema_dict )
     def post(self, request):
         '''
-        유저가 브랜드를 추가하는 API
+        브랜드를 추가하는 API
         '''
         anonymousId = request.META['HTTP_AUTHORIZATION']
         serializer = addedBrandSerializer(data = request.data)
@@ -78,7 +86,9 @@ class brandPopularView(APIView):
     '''
     브랜드를 인기순으로 받아온다.
     '''
-    @swagger_auto_schema(tags=['브랜드 API'], responses = {200: BrandSerializer(many = True)})
+    @swagger_auto_schema(tags=['브랜드 API'], 
+    manual_parameters=[openapi.Parameter('Authorization', openapi.IN_HEADER, description="유저 익명 아이디 ex) 51131230-d4b6-48f9-8807-b83f27f4b825", type=openapi.TYPE_STRING)],
+    responses = {200: BrandSerializer(many = True)})
     def get(self, request):
         size = 10
         query = Brand.objects.all().order_by('-click_count')[:size]
@@ -91,7 +101,7 @@ class brandMainView(APIView):
     메인화면에 띄울 브랜드 리스트를 가져온다.
     '''
     @swagger_auto_schema(tags=['브랜드 API'], 
-    manual_parameters=[openapi.Parameter('userId', openapi.IN_QUERY, description = "유저 아이디", type = openapi.TYPE_INTEGER)],
+    manual_parameters=[openapi.Parameter('Authorization', openapi.IN_HEADER, description="유저 익명 아이디 ex) 51131230-d4b6-48f9-8807-b83f27f4b825", type=openapi.TYPE_STRING)],
     responses = {200:BranditemSerializer(many = True)})
     def get(self, request):
         query = mainBrand.objects.filter(Is_deleted = False)
@@ -101,7 +111,9 @@ class brandMainView(APIView):
         return JsonResponse(data, status = 200, safe = False)
 
 
-@method_decorator(name="list", decorator=swagger_auto_schema(tags=["브랜드 API"]))
+@method_decorator(name="list", decorator=swagger_auto_schema(tags=["브랜드 API"],
+manual_parameters=[openapi.Parameter('Authorization', openapi.IN_HEADER, description="유저 익명 아이디 ex) 51131230-d4b6-48f9-8807-b83f27f4b825", type=openapi.TYPE_STRING)],
+))
 class brandSearchView(viewsets.ModelViewSet):
     '''
     검색 키워드를 받아 해당하는 브랜드 리스트를 돌려준다.
@@ -120,7 +132,7 @@ class brandSearchView(viewsets.ModelViewSet):
 
 class markedBrandView(APIView):
     @swagger_auto_schema(tags=['좋아요한 브랜드 API'],
-    manual_parameters=[openapi.Parameter('userId', openapi.IN_QUERY, description = "유저 아이디", type = openapi.TYPE_INTEGER)],
+    manual_parameters=[openapi.Parameter('Authorization', openapi.IN_HEADER, description="유저 익명 아이디 ex) 51131230-d4b6-48f9-8807-b83f27f4b825", type=openapi.TYPE_STRING)],
     responses = {200:getlikeBrandSerializer}
     )
     def get(self, request):
@@ -133,12 +145,13 @@ class markedBrandView(APIView):
         serializer = getlikeBrandSerializer(query, many = True)
         return JsonResponse(serializer.data, safe = False)
 
-@method_decorator(name = "get_queryset", decorator=swagger_auto_schema(tags=["좋아요한 브랜드 API"]))
+#@method_decorator(name = "get_object", decorator=swagger_auto_schema(tags=["좋아요한 브랜드 API"]))
 class markedBrandSearchView(generics.ListAPIView):
     '''
     유저가 좋아요한 브랜드 중 검색 키워드를 받아 해당하는 브랜드 리스트를 돌려준다.
     '''
     serializer_class = GlobalSearchSerializer
+    @swagger_auto_schema(tags=['좋아요한 브랜드 API'])
     def get_queryset(self):
         #미작업내용 : brands결과 유저별로 다르게 보여주는 것. liked brand를 join해서 가져오는 게 나을 듯 하다.
         query = self.request.query_params.get('search', None)
@@ -157,10 +170,11 @@ class markedBrandCountView(APIView):
     properties = {
         'brand': openapi.Schema(type = openapi.TYPE_INTEGER, description = 'brandId')    
     }),
+    manual_parameters=[openapi.Parameter('Authorization', openapi.IN_HEADER, description="유저 익명 아이디 ex) 51131230-d4b6-48f9-8807-b83f27f4b825", type=openapi.TYPE_STRING)],
     responses = response_schema_dict)
     def post(self, request):
         '''
-        브랜드 Id와 유저 Id를 받아와 좋아요 목록에 추가한다.
+        브랜드 Id를 받아와 좋아요 목록에 추가한다.
         '''
         serializer = postlikeBrandSerializer(data = request.data)
         user = User.objects.get(anonymous_id = request.META['HTTP_AUTHORIZATION'])

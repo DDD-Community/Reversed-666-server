@@ -15,7 +15,9 @@ class AnonymousUserView(APIView):
     '''
     인증 정보에 맞는 사용자의 정보를 돌려준다.
     '''
-    @swagger_auto_schema(tags=['유저 API'], responses = {200: user_response})
+    @swagger_auto_schema(tags=['유저 API'], 
+    manual_parameters=[openapi.Parameter('Authorization', openapi.IN_HEADER, description="유저 익명 아이디 ex) 51131230-d4b6-48f9-8807-b83f27f4b825", type=openapi.TYPE_STRING)],
+    responses = {200: user_response})
     def get(self, request):
         anonymousId = request.META['HTTP_AUTHORIZATION']
         obj = User.objects.get(anonymous_id=anonymousId)

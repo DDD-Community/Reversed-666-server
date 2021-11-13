@@ -14,7 +14,7 @@ from user.models import User
 
 class foldersView(APIView):
     @swagger_auto_schema(tags=['폴더 API'],
-    manual_parameters=[openapi.Parameter('userId', openapi.IN_QUERY, description = "유저 아이디", type = openapi.TYPE_INTEGER)],    
+    manual_parameters=[openapi.Parameter('Authorization', openapi.IN_HEADER, description="유저 익명 아이디 ex) 51131230-d4b6-48f9-8807-b83f27f4b825", type=openapi.TYPE_STRING)],
     responses = {200:FolderSerializer(many = True)}
     )
     def get(self, request):
@@ -33,6 +33,7 @@ class foldersView(APIView):
         'name': openapi.Schema(type = openapi.TYPE_INTEGER, description = '폴더 이름'),
         'description': openapi.Schema(type = openapi.TYPE_INTEGER, description = '폴더 설명')    
     }),
+    manual_parameters=[openapi.Parameter('Authorization', openapi.IN_HEADER, description="유저 익명 아이디 ex) 51131230-d4b6-48f9-8807-b83f27f4b825", type=openapi.TYPE_STRING)],
     responses = response_schema_dict
     )
     def post(self, request):
