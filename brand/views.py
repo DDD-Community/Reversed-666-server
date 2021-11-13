@@ -111,6 +111,13 @@ class brandSearchView(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter]
     search_fields = ['^name', '^en_name']
 
+    def list(self, request):
+        query = Brand.objects.all()
+        query = self.filter_queryset(query)
+        serializer = BranditemSerializer(query, many = True, context={'anonymousId': request.META['HTTP_AUTHORIZATION']})
+        return JsonResponse(serializer.data, safe = False, status = 200)
+        
+
 class markedBrandView(APIView):
     @swagger_auto_schema(tags=['좋아요한 브랜드 API'],
     manual_parameters=[openapi.Parameter('userId', openapi.IN_QUERY, description = "유저 아이디", type = openapi.TYPE_INTEGER)],
