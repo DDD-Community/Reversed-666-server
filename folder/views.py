@@ -10,6 +10,7 @@ from drf_yasg.utils import swagger_auto_schema
 from .models import Folder
 from .serializer import postFolderSerializer, FolderSerializer
 from brand.views import response_schema_dict
+from user.models import User
 
 class foldersView(APIView):
     @swagger_auto_schema(tags=['폴더 API'],
@@ -18,17 +19,17 @@ class foldersView(APIView):
     )
     def get(self, request):
         '''
-        userId에 해당하는 폴더 리스트를 받아온다.
+        유저에 해당하는 폴더 리스트를 받아온다.
         '''
-        userId = request.GET.get('userId')
-        queryset= Folder.objects.filter(user = userId, Is_deleted = False)
+        anonymousId = request.META['HTTP_AUTHORIZATION']
+        user = User.objects.get(anonymous_id = anonymousId)
+        queryset= Folder.objects.filter(user = user, Is_deleted = False)
         serializer = FolderSerializer(queryset, many = True)
         return JsonResponse(serializer.data, status = 200, safe = False)
     
     @swagger_auto_schema(tags=['폴더 API'], 
     request_body = openapi.Schema(type = openapi.TYPE_OBJECT,
     properties = {
-        'user': openapi.Schema(type = openapi.TYPE_INTEGER, description = '사용자 id'),
         'name': openapi.Schema(type = openapi.TYPE_INTEGER, description = '폴더 이름'),
         'description': openapi.Schema(type = openapi.TYPE_INTEGER, description = '폴더 설명')    
     }),
@@ -38,10 +39,11 @@ class foldersView(APIView):
         '''
         새로운 폴더를 만든다.
         '''
+        user = User.objects.get(anonymous_id = request.META['HTTP_AUTHORIZATION'])
         serializer = postFolderSerializer(data = request.data)
         if serializer.is_valid():
             try:
-                serializer.save()
+                serializer.save(user = user)
             except Exception as ex:
                 return JsonResponse({"status": "Fail", "message" : str(ex)}, status = 404, safe = False)
             else:

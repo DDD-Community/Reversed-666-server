@@ -8,15 +8,19 @@ from product.serializers import productImageSerializer
 
 class FolderSerializer(serializers.ModelSerializer):
     represent_image = serializers.SerializerMethodField()
+    products_num = serializers.SerializerMethodField()
 
     def get_represent_image(self, obj):
         query = Product.objects.filter(folder = obj.id)[:3]
         serializer = productImageSerializer(query, many = True)
         return serializer.data
+    
+    def get_products_num(self, obj):
+        return Product.objects.filter(folder = obj.id).count()
 
     class Meta:
         model = Folder
-        exclude = ['user','deleted_at', 'Is_deleted']
+        exclude = ['user','deleted_at', 'Is_deleted', 'created_at', 'updated_at']
 
 class postFolderSerializer(serializers.ModelSerializer):
     class Meta:

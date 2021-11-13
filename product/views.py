@@ -10,14 +10,15 @@ from .serializers import ProductSerializer, postProductSerializer
 from drf_yasg.utils import swagger_auto_schema
 from brand.views import response_schema_dict
 from .useOpengraph import productOpengraph
+from user.models import User
+from folder.models import Folder
 
 class ProductPostView(APIView):
     @swagger_auto_schema(tags=['상품 API'],
     request_body = openapi.Schema(type = openapi.TYPE_OBJECT,
         properties = {
-        'user': openapi.Schema(type = openapi.TYPE_INTEGER, description = '사용자 id'),
-        'folder': openapi.Schema(type = openapi.TYPE_INTEGER, description = '폴더 이름'),
-        'site_url': openapi.Schema(type = openapi.TYPE_INTEGER, description = '폴더 설명')    
+        'folder': openapi.Schema(type = openapi.TYPE_INTEGER, description = '폴더 id'),
+        'site_url': openapi.Schema(type = openapi.TYPE_INTEGER, description = '상품 링크')    
     }),
     responses = response_schema_dict
     )
@@ -25,8 +26,12 @@ class ProductPostView(APIView):
         '''
         상품을 좋아요 리스트에 추가한다.
         '''
+        anonymousId = request.META['HTTP_AUTHORIZATION']
         product = productOpengraph(request.data['site_url'])
+        user = User.objects.get(anonymous_id = anonymousId)
+        folder = Folder.objects.get(id = request.data['folder'], user = user)
         query = Product.objects.create(
+            user = user, folder = folder,
             name = product.title , price = product.price_amount, image_url = product.image, site_url = product.url
             )
         return JsonResponse({"status": "Success"}, status = 200)

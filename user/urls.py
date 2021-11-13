@@ -4,5 +4,5 @@ from .views import AnonymousUserView, MakeAnonymousUserView
 
 urlpatterns = [ 
     path("user/anonymous", MakeAnonymousUserView.as_view(), name="make user"),
-    path("user/<str:id>", AnonymousUserView.as_view(), name="get user"),
+    path("user", AnonymousUserView.as_view(), name="get user"),
 ]

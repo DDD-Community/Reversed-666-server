@@ -1,3 +1,4 @@
+from django.db.models import fields
 from .models import *
 from rest_framework import serializers
 from brand.serializer import BrandSerializer
@@ -7,8 +8,13 @@ class productImageSerializer(serializers.ModelSerializer):
         model = Product
         fields = ['image_url']
 
+class brandLogoserializer(serializers.ModelSerializer):
+    class Meta:
+        model = Brand
+        fields = ['logo_url']
+
 class ProductSerializer(serializers.ModelSerializer):
-    brand = BrandSerializer(read_only = True)
+    brand = brandLogoserializer(read_only = True)
     class Meta:
         music = Product.objects.all()
         model = Product

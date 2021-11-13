@@ -4,6 +4,7 @@ from rest_framework import generics, serializers
 
 from user.serializer import UserIdNameSerializer, UserSerializer
 from .models import mainBrand, Brand, likedBrand, addedBrand
+from user.models import User
 
 # Brand 객체에서 필요한 부분만 선택해 직렬화한다.
 class BrandSerializer(serializers.ModelSerializer):
@@ -16,12 +17,13 @@ class addedBrandSerializer(serializers.ModelSerializer):
         model = addedBrand
         fields = ['id', 'name', 'en_name', 'site_url', 'logo_url', 'user']
 
-class mainBranditemSerializer(serializers.ModelSerializer):
+class BranditemSerializer(serializers.ModelSerializer):
     is_liked = serializers.SerializerMethodField()
 
     def get_is_liked(self, obj):
         try:
-            Is_liked = likedBrand.objects.get(user = self.context.get("userId"), brand = obj.id)
+            user = User.objects.get(anonymous_id = self.context.get("anonymousId"))
+            Is_liked = likedBrand.objects.get(user = user, brand = obj.id)
         except likedBrand.DoesNotExist:
             Is_liked = False
         else:
@@ -47,7 +49,7 @@ class MainBrandType:
 
 
 class brandJoinSerializer(serializers.ModelSerializer):
-    brand = mainBranditemSerializer(read_only = True)
+    brand = BranditemSerializer(read_only = True)
     is_liked = serializers.SerializerMethodField()
 
     def get_is_liked(self, obj):
@@ -65,15 +67,9 @@ class clickCountSerializer(serializers.ModelSerializer):
         fields = ["id", "name", "click_count"]
 
 class postlikeBrandSerializer(serializers.ModelSerializer):
-    brand = BrandSerializer(read_only = True)
     class Meta:
         model = likedBrand
-        fields = ['id', 'user', 'brand']
-        
-    def to_representation(self, instance):
-        self.fields['user'] = UserIdNameSerializer(read_only = True)
-        self.fields['brand'] = BrandIdNameSerializer(read_only = True)
-        return super().to_representation(instance)
+        fields = ['brand']
 
 class getlikeBrandSerializer(serializers.ModelSerializer):
     brand = BrandSerializer(read_only = True)

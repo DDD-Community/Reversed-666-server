@@ -9,10 +9,11 @@ from rest_framework import filters, viewsets
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from django.utils.decorators import method_decorator
-from .serializer import BrandSerializer, brandJoinSerializer, mainBranditemSerializer, postlikeBrandSerializer, getlikeBrandSerializer, addedBrandSerializer, GlobalSearchSerializer
+from .serializer import BrandSerializer, brandJoinSerializer, BranditemSerializer, postlikeBrandSerializer, getlikeBrandSerializer, addedBrandSerializer, GlobalSearchSerializer
 from .models import addedBrand, likedBrand, mainBrand, Brand
 from user.models import User
 from itertools import chain
+from .logoCrawler import logoCroller
 
 response_schema_dict = {
     "200": openapi.Response(
@@ -57,11 +58,14 @@ class brandAddView(APIView):
         '''
         유저가 브랜드를 추가하는 API
         '''
+        anonymousId = request.META['HTTP_AUTHORIZATION']
         serializer = addedBrandSerializer(data = request.data)
+        user = User.objects.get(anonymous_id = anonymousId)
         if serializer.is_valid():
             try:
-                serializer.save()
-                user = User.objects.get(id = request.data['user'])
+                serializer.save(user = user)
+                user = User.objects.get(anonymous_id=anonymousId)
+                print(user.id)
                 added_brand = addedBrand.objects.get(id = serializer.data['id'])
                 query = likedBrand.objects.create(user = user, added_brand = added_brand)
             except Exception as ex:
@@ -78,7 +82,7 @@ class brandPopularView(APIView):
     def get(self, request):
         size = 10
         query = Brand.objects.all().order_by('-click_count')[:size]
-        serializer = BrandSerializer(query, many = True)
+        serializer = BranditemSerializer(query, many = True, context={'anonymousId': request.META['HTTP_AUTHORIZATION']})
 
         return JsonResponse(serializer.data, status = 200, safe = False)
         
@@ -88,11 +92,11 @@ class brandMainView(APIView):
     '''
     @swagger_auto_schema(tags=['브랜드 API'], 
     manual_parameters=[openapi.Parameter('userId', openapi.IN_QUERY, description = "유저 아이디", type = openapi.TYPE_INTEGER)],
-    responses = {200:mainBranditemSerializer(many = True)})
+    responses = {200:BranditemSerializer(many = True)})
     def get(self, request):
         query = mainBrand.objects.filter(Is_deleted = False)
         query = query.select_related("brand")
-        serializer = brandJoinSerializer(query, many = True, context={'userId': request.GET.get('userId')})
+        serializer = brandJoinSerializer(query, many = True, context={'anonymousId': request.META['HTTP_AUTHORIZATION']})
         data = list(map(lambda x : x['brand'], serializer.data))
         return JsonResponse(data, status = 200, safe = False)
 
@@ -114,10 +118,10 @@ class markedBrandView(APIView):
     )
     def get(self, request):
         '''
-        query param으로 입력받은 유저가 좋아요한 브랜드 리스트를 보여준다.
+        유저가 좋아요한 브랜드 리스트를 보여준다.
         '''
-        userId = request.GET.get('userId')
-        query = likedBrand.objects.filter(user = userId, Is_deleted = False)
+        user = User.objects.get(anonymous_id = request.META['HTTP_AUTHORIZATION'])
+        query = likedBrand.objects.filter(user = user, Is_deleted = False)
         query = query.select_related("brand", "added_brand")
         serializer = getlikeBrandSerializer(query, many = True)
         return JsonResponse(serializer.data, safe = False)
@@ -144,7 +148,6 @@ class markedBrandCountView(APIView):
     @swagger_auto_schema(tags=['좋아요한 브랜드 API'], 
     request_body = openapi.Schema(type = openapi.TYPE_OBJECT,
     properties = {
-        'user': openapi.Schema(type = openapi.TYPE_INTEGER, description = 'userId'),
         'brand': openapi.Schema(type = openapi.TYPE_INTEGER, description = 'brandId')    
     }),
     responses = response_schema_dict)
@@ -153,12 +156,13 @@ class markedBrandCountView(APIView):
         브랜드 Id와 유저 Id를 받아와 좋아요 목록에 추가한다.
         '''
         serializer = postlikeBrandSerializer(data = request.data)
+        user = User.objects.get(anonymous_id = request.META['HTTP_AUTHORIZATION'])
         queryset = Brand.objects.get(id = request.data['brand'])
         queryset.like_count +=1
         queryset.save()
         if serializer.is_valid():
             try:
-                serializer.save()
+                serializer.save(user = user)
             except Exception as ex:
                 return JsonResponse({"status": "Fail", "message" : str(ex)}, status = 404, safe = False)
             else:

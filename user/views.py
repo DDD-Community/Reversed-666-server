@@ -13,11 +13,12 @@ user_create_response = openapi.Response('응답 예시', UserCreateSerializer)
 
 class AnonymousUserView(APIView):
     '''
-    사용자 Id를 받아 사용자의 정보를 돌려준다.
+    인증 정보에 맞는 사용자의 정보를 돌려준다.
     '''
     @swagger_auto_schema(tags=['유저 API'], responses = {200: user_response})
-    def get(self, request, id):
-        obj = User.objects.get(id=id)
+    def get(self, request):
+        anonymousId = request.META['HTTP_AUTHORIZATION']
+        obj = User.objects.get(anonymous_id=anonymousId)
         serializer = UserSerializer(obj)
         return JsonResponse(serializer.data, status = 200)
 
