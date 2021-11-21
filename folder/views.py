@@ -8,9 +8,30 @@ from rest_framework import status
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from .models import Folder
-from .serializer import postFolderSerializer, FolderSerializer
-from brand.views import response_schema_dict
+from .serializer import postFolderSerializer, FolderSerializer, postFolderInfoSerializer
 from user.models import User
+
+response_schema_dict = {
+    "200": openapi.Response(
+        description="DB 저장에 성공했을 시",
+        examples={
+            "application/json": {
+                "id": 12,
+                "name": "나의 코트",
+                "thumbnailurl": []
+            }
+        }
+    ),
+    "404": openapi.Response(
+        description="DB 저장에 실패했을 시",
+        examples={
+            "application/json": {
+                "status": "Fail",
+                "message": "error message (상황에 따라 다름)"
+            }
+        }
+    ),
+}
 
 class foldersView(APIView):
     @swagger_auto_schema(tags=['폴더 API'],
@@ -45,10 +66,12 @@ class foldersView(APIView):
         if serializer.is_valid():
             try:
                 serializer.save(user = user)
+                folder = Folder.objects.get(id = serializer.data['id'])
+                serializer = postFolderInfoSerializer(folder)
             except Exception as ex:
                 return JsonResponse({"status": "Fail", "message" : str(ex)}, status = 404, safe = False)
             else:
-                return JsonResponse({"status": "Success"}, status = 200)
+                return JsonResponse(serializer.data, status = 200)
         return JsonResponse({"status": "Fail", "message" : "올바르지 않은 요청입니다."}, status = 404, safe = False)
     
 class folderView(APIView):

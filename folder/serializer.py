@@ -7,10 +7,10 @@ from product.models import Product
 from product.serializers import productImageSerializer
 
 class FolderSerializer(serializers.ModelSerializer):
-    represent_image = serializers.SerializerMethodField()
+    thumbnailurls = serializers.SerializerMethodField()
     products_num = serializers.SerializerMethodField()
 
-    def get_represent_image(self, obj):
+    def get_thumbnailurls(self, obj):
         query = Product.objects.filter(folder = obj.id)[:3]
         serializer = productImageSerializer(query, many = True)
         return serializer.data
@@ -25,4 +25,16 @@ class FolderSerializer(serializers.ModelSerializer):
 class postFolderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Folder
-        fields = ['user', 'name', 'description']
+        fields = ['id', 'name', 'description']
+
+class postFolderInfoSerializer(serializers.ModelSerializer):
+    thumbnailurl = serializers.SerializerMethodField()
+
+    def get_thumbnailurl(self, obj):
+        query = Product.objects.filter(folder = obj.id)[:3]
+        serializer = productImageSerializer(query, many = True)
+        return serializer.data
+
+    class Meta:
+        model = Folder
+        fields = ['id', 'name', 'thumbnailurl']

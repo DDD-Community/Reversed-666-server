@@ -21,8 +21,7 @@ def opengraphParser(url):
         if item.has_attr(u'content'):
             print(item[u'content'])
 
-product = productOpengraph("http://m.earpearp.com/product/%EC%96%B4%ED%94%84%EC%96%B4%ED%94%84x%ED%8E%AD%EC%88%98dinner-tea-time-brown%ED%95%98%EB%93%9C/13198/category/1/display/2/")
-print(product)
+
 
 '''
 images1 = soup.select('img[src*="product"]')
