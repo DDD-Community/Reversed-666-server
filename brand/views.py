@@ -9,7 +9,7 @@ from rest_framework import filters, viewsets
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from django.utils.decorators import method_decorator
-from .serializer import BrandSerializer, brandJoinSerializer, BranditemSerializer, postlikeBrandSerializer, getlikeBrandSerializer, addedBrandSerializer, GlobalSearchSerializer
+from .serializer import BrandSerializer, brandJoinSerializer, BranditemSerializer, postlikeBrandSerializer, getlikeBrandSerializer, addedBrandSerializer, GlobalSearchSerializer, SgetlikeBrandSerializer
 from .models import addedBrand, likedBrand, mainBrand, Brand
 from user.models import User
 from itertools import chain
@@ -133,7 +133,7 @@ class brandSearchView(viewsets.ModelViewSet):
 class markedBrandView(APIView):
     @swagger_auto_schema(tags=['좋아요한 브랜드 API'],
     manual_parameters=[openapi.Parameter('Authorization', openapi.IN_HEADER, description="유저 익명 아이디 ex) 51131230-d4b6-48f9-8807-b83f27f4b825", type=openapi.TYPE_STRING)],
-    responses = {200:getlikeBrandSerializer}
+    responses = {200:SgetlikeBrandSerializer}
     )
     def get(self, request):
         '''
@@ -143,6 +143,14 @@ class markedBrandView(APIView):
         query = likedBrand.objects.filter(user = user, Is_deleted = False)
         query = query.select_related("brand", "added_brand")
         serializer = getlikeBrandSerializer(query, many = True)
+
+        for i in range(len(serializer.data)):
+            if(not serializer.data[i]['Is_added']):
+                del(serializer.data[i]['added_brand'])
+            else:
+                serializer.data[i]['brand'] = serializer.data[i]['added_brand']
+                del(serializer.data[i]['added_brand'])
+
         return JsonResponse(serializer.data, safe = False)
 
 #@method_decorator(name = "get_object", decorator=swagger_auto_schema(tags=["좋아요한 브랜드 API"]))

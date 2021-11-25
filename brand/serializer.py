@@ -15,7 +15,7 @@ class BrandSerializer(serializers.ModelSerializer):
 class addedBrandSerializer(serializers.ModelSerializer):
     class Meta:
         model = addedBrand
-        fields = ['id', 'name', 'en_name', 'site_url', 'logo_url', 'user']
+        fields = ['id', 'name', 'en_name', 'site_url', 'logo_url']
 
 class BranditemSerializer(serializers.ModelSerializer):
     is_liked = serializers.SerializerMethodField()
@@ -70,6 +70,19 @@ class postlikeBrandSerializer(serializers.ModelSerializer):
     class Meta:
         model = likedBrand
         fields = ['brand']
+
+
+class SgetlikeBrandSerializer(serializers.ModelSerializer):
+    brand = BrandSerializer(read_only = True)
+    Is_added = serializers.SerializerMethodField()
+
+    def get_Is_added (self, obj):
+        return True
+
+    class Meta:
+        model = likedBrand
+        fields = ['id', 'Is_added', 'brand']
+
 
 class getlikeBrandSerializer(serializers.ModelSerializer):
     brand = BrandSerializer(read_only = True)
